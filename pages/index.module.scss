@@ -1,0 +1,36 @@
+.exchangeContainer {
+    width: 100%;
+    height: 100vh;
+    background: aliceblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.exchangeBox {
+    width: 50%;
+    height: 40%;
+    border-radius: 10px;
+    background: rgb(7, 93, 192);
+}
+
+.heading {
+    font-size: 30px;
+    color: white;
+    margin-top: 16px;
+}
+
+.form {
+    margin: 64px 0;
+}
+
+.inputContainer {
+    margin: 32px 0;
+    max-height: 48px;
+}
+
+.optionsContainer {
+    max-height: 300px;
+    overflow-y: scroll;
+}
