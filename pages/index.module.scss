@@ -1,0 +1,72 @@
+.exchangeContainer {
+    width: 100%;
+    height: 100vh;
+    background: aliceblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+.exchangeBox {    
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+    height: 60%;
+    border-radius: 10px;
+    background: rgb(7, 93, 192);
+}
+
+.heading {
+    font-size: 30px;
+    color: white;
+    margin-top: 16px;
+}
+
+.form {
+    width: 50%;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.inputContainer {
+    margin: 32px 0;
+    max-height: 48px;
+    max-width: 720px;
+}
+
+.optionsContainer {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.footer {
+    color: white;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .exchangeBox {
+        height: 100%;
+        width: 100%;
+        border-radius: 0;
+        padding: 16px;
+    }
+
+    .form {
+        margin: 64px 0;
+        width: 75%;
+    } 
+
+    .inputContainer {
+       width: 100%;
+    }
+
+}
