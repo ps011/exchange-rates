@@ -3,7 +3,7 @@ import { InputGroup, DropdownButton, Dropdown, FormControl, Button } from 'react
 import { CURRENCIES } from '../constants';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
+import { useRouter } from 'next/router';
 export async function getStaticProps() {
   const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
   const rates = await res.json()
@@ -17,9 +17,9 @@ export async function getStaticProps() {
 }
 
 export default function Home({ exchangeRates }) {
-
-  const [sourceCurrency, setSourceCurrency] = useState('Currency');
-  const [destinationCurrency, setDestinationCurrency] = useState('Currency');
+  const {query} = useRouter();
+  const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || /*localStorage?.getItem('src') ||*/ 'EUR');
+  const [destinationCurrency, setDestinationCurrency] = useState(query?.dest?.toUpperCase() || /*localStorage?.getItem('dest') ||*/ 'INR');
   const [sourceValue, setSourceValue] = useState(1);
   const [destinationValue, setDestinationValue] = useState(0);
 
@@ -35,6 +35,15 @@ export default function Home({ exchangeRates }) {
       alert('Please Select Currencies')
     }
   }
+
+  const toggleCurrencies = () => {
+    const src = sourceCurrency;
+    const srcVal = sourceValue;
+    setSourceCurrency(destinationCurrency);
+    setDestinationCurrency(src);
+    setSourceValue(destinationValue);
+    setDestinationValue(srcVal);
+  }
   return (
     <div className={s.exchangeContainer}>
       <div className={s.exchangeBox}>
@@ -49,7 +58,7 @@ export default function Home({ exchangeRates }) {
               <div className={s.optionsContainer}>
                 {Object.keys(CURRENCIES)
                   .map((currency, index) => (
-                    <Dropdown.Item onClick={(e) => setSourceCurrency(currency)} key={index}>
+                    <Dropdown.Item onClick={(e) => {setSourceCurrency(currency); localStorage.setItem('src', currency)}} key={index}>
                       {CURRENCIES[currency]}
                     </Dropdown.Item>)
                   )}
@@ -69,7 +78,7 @@ export default function Home({ exchangeRates }) {
               <div className={s.optionsContainer}>
                 {Object.keys(CURRENCIES)
                   .map((currency, index) => (
-                    <Dropdown.Item onClick={(e) => setDestinationCurrency(currency)} key={index}>
+                    <Dropdown.Item onClick={(e) => {setDestinationCurrency(currency); localStorage.setItem('dest', currency)}} key={index}>
                       {CURRENCIES[currency]}
                     </Dropdown.Item>)
                   )}
@@ -79,6 +88,7 @@ export default function Home({ exchangeRates }) {
               value={destinationValue}
               disabled />
           </InputGroup>
+          <Button variant="dark mt-3" onClick={toggleCurrencies}>Toggle Currencies</Button>
         </div>
         <div className={s.footer}>
           Developed and Maintained by <br /> <Link href="https://ps011.github.io">Prasheel Soni</Link>
