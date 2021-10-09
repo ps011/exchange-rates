@@ -6,7 +6,9 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head >
-            <title>Currency Exchange Rates</title>
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="apple-touch-icon" href="/icon-192.png"></link>
+          <meta name="theme-color" content="#075dc0" />
         </Head>
         <body>
           <Main />
