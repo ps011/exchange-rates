@@ -68,14 +68,6 @@ export default function Home({ exchangeRates }) {
             <Container>
               <Row>
                 <Col>
-                  <label
-                    style={{
-                      color: 'white',
-                      fontWeight: 600,
-                      fontSize: 18
-                    }}>
-                    {sourceCurrency}
-                  </label>
                 </Col>
               </Row>
               <Row>
@@ -88,7 +80,7 @@ export default function Home({ exchangeRates }) {
                       localStorage.setItem('src', e.value)
                     }}
                     options={currencyList}
-                    placeholder="Source"
+                    placeholder={sourceCurrency}
                     tabSelectsValue={false}
                     value={sourceCurrency}
                   />
@@ -106,14 +98,6 @@ export default function Home({ exchangeRates }) {
             <Container>
               <Row>
                 <Col>
-                  <label
-                    style={{
-                      color: 'white',
-                      fontWeight: 600,
-                      fontSize: 18
-                    }}>
-                    {destinationCurrency}
-                  </label>
                 </Col>
               </Row>
               <Row>
@@ -126,7 +110,7 @@ export default function Home({ exchangeRates }) {
                       localStorage.setItem('dest', e.value)
                     }}
                     options={currencyList}
-                    placeholder="Destination"
+                    placeholder={destinationCurrency}
                     tabSelectsValue={false}
                     value={destinationCurrency}
                   />
@@ -139,7 +123,7 @@ export default function Home({ exchangeRates }) {
               </Row>
             </Container>
           </InputGroup>
-          <Button variant="dark mt-3" onClick={toggleCurrencies}>Toggle Currencies</Button>
+          <Button variant="dark mt-5" onClick={toggleCurrencies}>Toggle Currencies</Button>
         </div>
         <div className={s.footer}>
           Developed and Maintained by <br /> <Link href="https://ps011.github.io">Prasheel Soni</Link>
