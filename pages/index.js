@@ -11,16 +11,16 @@ import Select from 'react-select';
 export async function getStaticProps() {
   const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
   const rates = await res.json();
-
   return {
     props: {
       exchangeRates: rates.rates || null,
+      lastUpdated: new Date(Date.now()).toUTCString()
     },
     revalidate: 3600,
   }
 }
 
-export default function Home({ exchangeRates }) {
+export default function Home({ exchangeRates, lastUpdated }) {
   const { query } = useRouter();
 
   const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || /*localStorage?.getItem('src') ||*/ 'EUR');
@@ -142,9 +142,10 @@ export default function Home({ exchangeRates }) {
           <Button variant="dark mt-3" onClick={toggleCurrencies}>Toggle Currencies</Button>
         </div>
         <div className={s.footer}>
+          <small>Last Updated: {lastUpdated}</small> <br />
           Developed and Maintained by <br /> <Link href="https://ps011.github.io">Prasheel Soni</Link>
         </div>
       </div>
-    </div >
+    </div>
   )
 }
