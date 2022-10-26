@@ -6,13 +6,14 @@ This is a nextjs based application to convert one currency into another using th
 
 - Select currencies
 - Set source currency and get a corresponding value in destination currency
+- Add the last updated time for currency rates
 
 ### Planned Features
 
 - Add Header and Footer
 - Add animations
 - Add Dark Mode
-- Add the last updated time for currency rates
+
 
 ### Setups
 
