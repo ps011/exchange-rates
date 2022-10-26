@@ -25,8 +25,8 @@ export default function Home({ exchangeRates }) {
   let sourceCur, destinationCur = ''
   
   if (typeof window !== "undefined") {
-    sourceCur = localStorage.getItem('src');
-    destinationCur = localStorage.getItem('dest')
+    sourceCur = localStorage.getItem('src') || false;
+    destinationCur = localStorage.getItem('dest') || false;
   }
   
   const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || sourceCur || 'EUR');
