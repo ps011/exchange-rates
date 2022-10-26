@@ -24,7 +24,7 @@ export default function Home({ exchangeRates }) {
   const { query } = useRouter();
   let sourceCur, destinationCur = ''
   
-  if (window !== undefined) {
+  if (typeof window !== "undefined") {
     sourceCur = localStorage.getItem('src');
     destinationCur = localStorage.getItem('dest')
   }
