@@ -42,10 +42,6 @@ export default function Home({ exchangeRates }) {
       list.push(obj);
     });
     setCurrencyList(list);
-    if (localStorage?.getItem('src')) {
-      setSourceCurrency(localStorage?.getItem('src'));
-      setDestinationCurrency(localStorage?.getItem('dest'));
-    }
   }, [])
 
   useEffect(() => {
