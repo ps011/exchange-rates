@@ -22,9 +22,15 @@ export async function getStaticProps() {
 
 export default function Home({ exchangeRates }) {
   const { query } = useRouter();
-
-  const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || localStorage?.getItem('src') || 'EUR');
-  const [destinationCurrency, setDestinationCurrency] = useState(query?.dest?.toUpperCase() || localStorage?.getItem('dest') || 'INR');
+  let sourceCur, destinationCur = ''
+  
+  if (window !== undefined) {
+    sourceCur = localStorage.getItem('src');
+    destinationCur = localStorage.getItem('dest')
+  }
+  
+  const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || sourceCur || 'EUR');
+  const [destinationCurrency, setDestinationCurrency] = useState(query?.dest?.toUpperCase() || destinationCur || 'INR');
   const [sourceValue, setSourceValue] = useState(1);
   const [destinationValue, setDestinationValue] = useState(0);
   const [currencyList, setCurrencyList] = useState([]);
