@@ -22,9 +22,15 @@ export async function getStaticProps() {
 
 export default function Home({ exchangeRates, lastUpdated }) {
   const { query } = useRouter();
-
-  const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || /*localStorage?.getItem('src') ||*/ 'EUR');
-  const [destinationCurrency, setDestinationCurrency] = useState(query?.dest?.toUpperCase() || /*localStorage?.getItem('dest') ||*/ 'INR');
+  let sourceCur, destinationCur = ''
+  
+  if (typeof window !== "undefined") {
+    sourceCur = localStorage.getItem('src') || false;
+    destinationCur = localStorage.getItem('dest') || false;
+  }
+  
+  const [sourceCurrency, setSourceCurrency] = useState(query?.src?.toUpperCase() || sourceCur || 'EUR');
+  const [destinationCurrency, setDestinationCurrency] = useState(query?.dest?.toUpperCase() || destinationCur || 'INR');
   const [sourceValue, setSourceValue] = useState(1);
   const [destinationValue, setDestinationValue] = useState(0);
   const [currencyList, setCurrencyList] = useState([]);
@@ -52,6 +58,8 @@ export default function Home({ exchangeRates, lastUpdated }) {
   }
 
   const toggleCurrencies = () => {
+    localStorage.setItem('src', sourceCurrency);
+    localStorage.setItem('dest', destinationCurrency);
     const src = sourceCurrency;
     const srcVal = sourceValue;
     setSourceCurrency(destinationCurrency);
@@ -59,6 +67,7 @@ export default function Home({ exchangeRates, lastUpdated }) {
     setSourceValue(destinationValue);
     setDestinationValue(srcVal);
   }
+
   return (
     <div className={s.exchangeContainer}>
       <div className={s.exchangeBox}>
