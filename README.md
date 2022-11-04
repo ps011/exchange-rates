@@ -11,8 +11,17 @@ This is a nextjs based application to convert one currency into another using th
 
 ### Planned Features
 
-- Add Header and Footer
-- Add animations
+- Product
+    - As a user I should be able to see conversion rates on the title bar
+    - As a user I should be able to enable live exchange rate tracking by polling API every 3 or 5 mins or something
+    - As a user I should be able to setup notifications for specific currencies and target rates so that I do not miss when a currency reaches certain value
+
+- Tech
+    - Add Header and Footer
+    - Add animations
+    - Add a favicon
+    - Check the API and see what else can be leveraged from there
+    - Add better Dark mode
 
 
 
