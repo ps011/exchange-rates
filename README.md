@@ -17,13 +17,17 @@ This is a nextjs based application to convert one currency into another using th
     - As a user I should be able to setup notifications for specific currencies and target rates so that I do not miss when a currency reaches certain value
 
 - Tech
+    - Migrate to typescript
     - Add Header and Footer
     - Add animations
     - Add a favicon
-    - Check the API and see what else can be leveraged from there
     - Add better Dark mode
 
-
+### API Endpoints
+- `/rates`
+- `/history`
+- `/timeframe`
+- `/currencies`
 
 ### Setups
 
