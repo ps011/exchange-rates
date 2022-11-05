@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Select from 'react-select';
 
-
-
 export async function getStaticProps() {
   const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
   const rates = await res.json();
@@ -69,7 +67,11 @@ export default function Home({ exchangeRates, lastUpdated }) {
   }
 
   return (
-    <div className={s.exchangeContainer}>
+  <div className={s.exchangeContainer}>
+  {
+    destinationValue && 
+    <title>{sourceCurrency} {sourceValue} → {destinationCurrency} {destinationValue}</title>
+  }
       <div className={s.exchangeBox}>
         <h1 className={`text-center ${s.heading}`}>Currency Exchange Rates</h1>
         <div className={`mx-auto ${s.form}`}>
