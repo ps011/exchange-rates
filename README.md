@@ -15,6 +15,7 @@ This is a nextjs based application to convert one currency into another using th
     - As a user I should be able to see conversion rates on the title bar
     - As a user I should be able to enable live exchange rate tracking by polling API every 3 or 5 mins or something
     - As a user I should be able to setup notifications for specific currencies and target rates so that I do not miss when a currency reaches certain value
+    - As a user, I should be able to see the last changed time in my timezone
 
 - Tech
     - Migrate to typescript
