@@ -1,10 +1,10 @@
 export default function CurrencyInputGroup({select, input}) {
     return (
-        <div className="flex w-100 m-4">
-            <div className="mx-1 flex-1">
+        <div className="flex flex-col my-4 mx-12 md:flex-row md:mx-0">
+            <div className="my-1 md:flex-1 md:mx-1">
                 {select}
             </div>
-            <div className="mx-1 flex-1">
+            <div className="my-1 md:flex-1 md:mx-1 ">
                 {input}
             </div>
         </div>

@@ -2,7 +2,7 @@ import {CURRENCIES} from '../constants';
 import {useState, useEffect} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import {SelectCurrency} from "../components/SelectCurrency";
+import {Currency, SelectCurrency} from "../components/SelectCurrency";
 import {Button, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
 
@@ -12,20 +12,25 @@ export async function getStaticProps() {
     return {
         props: {
             exchangeRates: data.rates || null,
-            lastUpdated: new Date(Date.now()).toUTCString()
+            lastUpdated: new Date(Date.now()).toString()
         },
         revalidate: 3600,
     }
 }
 
 export default function Home({exchangeRates, lastUpdated}) {
+    const SRC_KEY = 'src';
+    const DEST_KEY = 'dest';
     const {query} = useRouter();
-    let sourceCur = '';
-    let destinationCur = ''
+    let sourceCur: Currency = {label: CURRENCIES["EUR"], value: "EUR"};
+    let destinationCur: Currency = {label: CURRENCIES["INR"], value: "INR"};
+    const getCurrencyFromValue = (value: string): Currency => {
+        return {label: CURRENCIES[value], value: value};
+    }
 
     if (typeof window !== "undefined") {
-        sourceCur = (query.src as string) || localStorage.getItem('src') || 'EUR';
-        destinationCur = (query.dest as string) || localStorage.getItem('dest') || 'INR';
+        sourceCur = getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || 'EUR');
+        destinationCur = getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || 'INR');
     }
     const [sourceCurrency, setSourceCurrency] = useState(sourceCur);
     const [destinationCurrency, setDestinationCurrency] = useState(destinationCur);
@@ -34,45 +39,38 @@ export default function Home({exchangeRates, lastUpdated}) {
     const [currencyList, setCurrencyList] = useState([]);
 
     useEffect(() => {
-        const list = []
+        const currencyList: Currency[] = []
         Object.keys(CURRENCIES).map(key => {
-            const obj = {label: CURRENCIES[key], value: key};
-            list.push(obj);
+            const currency: Currency = {label: CURRENCIES[key], value: key};
+            currencyList.push(currency);
         });
-        setCurrencyList(list);
-        console.log(sourceCurrency, destinationCurrency)
-    }, [])
-
-    useEffect(() => {
+        setCurrencyList(currencyList);
         calculateExchangeRate(sourceValue);
     }, [destinationCurrency, sourceCurrency])
 
     const calculateExchangeRate = (e) => {
-        if (sourceCurrency !== 'Currency' && destinationCurrency !== 'Currency') {
+        if (sourceCurrency && destinationCurrency) {
             setSourceValue(e)
-            setDestinationValue(parseFloat((e * (exchangeRates[destinationCurrency] / exchangeRates[sourceCurrency])).toFixed(2)));
+            setDestinationValue(parseFloat((e * (exchangeRates[destinationCurrency.value] / exchangeRates[sourceCurrency.value])).toFixed(2)));
         } else {
             alert('Please Select Currencies')
         }
     }
 
     const toggleCurrencies = () => {
-        localStorage.setItem('src', sourceCurrency);
-        localStorage.setItem('dest', destinationCurrency);
+        localStorage.setItem(SRC_KEY, sourceCurrency.value);
+        localStorage.setItem(DEST_KEY, destinationCurrency.value);
         const src = sourceCurrency;
-        const srcVal = sourceValue;
         setSourceCurrency(destinationCurrency);
         setDestinationCurrency(src);
-        setSourceValue(destinationValue);
-        setDestinationValue(srcVal);
     }
 
-    function sourceCurrencySelect() {
+    const sourceCurrencySelect = () => {
         return (
             <SelectCurrency
                 onChange={(e) => {
-                    setSourceCurrency(e.value);
-                    localStorage.setItem('src', e.value)
+                    setSourceCurrency(e);
+                    localStorage.setItem(SRC_KEY, e.value)
                 }}
                 currencyList={currencyList}
                 currency={sourceCurrency}
@@ -80,12 +78,12 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
-    function destinationCurrencySelect() {
+    const destinationCurrencySelect = () => {
         return (
             <SelectCurrency
                 onChange={(e) => {
-                    setDestinationCurrency(e.value);
-                    localStorage.setItem('dest', e.value)
+                    setDestinationCurrency(e);
+                    localStorage.setItem(DEST_KEY, e.value)
                 }}
                 currencyList={currencyList}
                 currency={destinationCurrency}
@@ -93,39 +91,41 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
-    function sourceCurrencyInput() {
+    const sourceCurrencyInput = () => {
         return (
             <TextField
-                className="dark:bg-white"
+                className="w-full dark:bg-white"
                 type="number"
                 value={sourceValue}
                 onChange={(e) => calculateExchangeRate(e.target.value)}/>
         )
     }
 
-    function destinationCurrencyInput() {
+    const destinationCurrencyInput = () => {
         return (
             <TextField
-                className="dark:bg-white"
+                className="w-full dark:bg-white"
                 type="number"
                 value={destinationValue}
-                onChange={(e) => calculateExchangeRate(e.target.value)}/>
+                disabled
+            />
         )
     }
 
     return (
-        <div className="flex flex-col justify-center items-center h-screen bg-blue-400 dark:bg-blue-950 dark:text-white">
-            <div className="text-center">
-                <h1>Currency Exchange Rates</h1>
-                <div>
-                    <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
-                    <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                </div>
-                <Button variant="contained" onClick={toggleCurrencies}>Toggle Currencies</Button>
-                <div>
-                    <small>Last Updated: {lastUpdated}</small> <br/>
-                    Developed and Maintained by <br/> <Link href="https://ps011.github.io">Prasheel Soni</Link>
-                </div>
+        <div
+            className="flex flex-col justify-between items-center h-screen w-screen bg-blue-400 text-center dark:bg-blue-950 dark:text-white">
+            <h1>Currency Exchange Rates</h1>
+            <div className="w-full md:w-4/5 lg:w-2/3">
+                <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
+                <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
+                <Button className="mt-6" variant="contained" size="large" onClick={toggleCurrencies}>Toggle
+                    Currencies</Button>
+            </div>
+            <div className="text-center flex flex-col">
+                <small>Last Updated: {lastUpdated}</small>
+                <p>Developed and Maintained by</p>
+                <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
         </div>
     )
