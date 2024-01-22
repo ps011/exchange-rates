@@ -115,16 +115,21 @@ export default function Home({exchangeRates, lastUpdated}) {
     return (
         <div
             className="flex flex-col justify-between items-center h-screen w-screen bg-blue-400 text-center dark:bg-blue-950 dark:text-white">
+            {
+                destinationValue &&
+                <title>{sourceCurrency.value} {sourceValue} → {destinationCurrency.value} {destinationValue}</title>
+            }
             <h1>Currency Exchange Rates</h1>
             <div className="w-full md:w-4/5 lg:w-2/3">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                <Button className="mt-6" variant="contained" size="large" onClick={toggleCurrencies}>Toggle
-                    Currencies</Button>
+                <Button className="mt-4" variant="contained" size="large" onClick={toggleCurrencies}>Toggle
+                    Currencies
+                </Button>
+                <small className="mt-4 block">Last Updated: {lastUpdated}</small>
             </div>
             <div className="text-center flex flex-col">
-                <small>Last Updated: {lastUpdated}</small>
-                <p>Developed and Maintained by</p>
+                <p className="my-0">Developed and Maintained by</p>
                 <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
         </div>
