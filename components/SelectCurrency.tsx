@@ -3,7 +3,6 @@ import {Autocomplete, TextField} from "@mui/material";
 export interface Currency {
     label: string;
     value: string;
-    selected?: boolean;
 }
 
 interface SelectCurrencyProps {
