@@ -34,3 +34,6 @@ yarn-error.log*
 /.vscode
 .idea
 
+#map files
+*.map
+
