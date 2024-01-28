@@ -11,6 +11,9 @@
 # next.js
 /.next/
 /out/
+/public/workbox-*.js
+/public/sw.js
+/public/worker-development.js
 
 # production
 /build
@@ -31,6 +34,9 @@ yarn-error.log*
 .env
 
 # editor specific files and folders
-/.vscode
+.vscode
 .idea
+
+#map files
+*.map
 

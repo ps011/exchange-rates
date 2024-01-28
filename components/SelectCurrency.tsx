@@ -27,6 +27,7 @@ export function SelectCurrency({onChange, currencyList, currency}: SelectCurrenc
             value={currency}
             isOptionEqualToValue={isOptionEqualToValue}
             filterOptions={filterOptions}
+            disableClearable={true}
             onChange={(_e, v) => onChange(v)}
             renderInput={(params) => <TextField className="text-black" {...params}/>}
         />
