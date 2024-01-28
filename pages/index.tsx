@@ -5,8 +5,7 @@ import {useRouter} from 'next/router';
 import {Currency, SelectCurrency} from "../components/SelectCurrency";
 import {Button, Fab, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
-import {ToggleIcon} from "../components/ToggleIcon";
-import {NotificationAdd} from "@mui/icons-material";
+import {NotificationAdd, SwapVert} from "@mui/icons-material";
 
 type Rate = { [key in CurrencyCodes]: number };
 
@@ -151,8 +150,8 @@ export default function Home({exchangeRates, lastUpdated}) {
                                 destinationCurrency: destinationCurrency.value,
                             }
                         });
-                    });
                     localStorage.setItem(NOTIFICATION_KEY, 'true');
+                    });
                 }
             });
     }
@@ -176,7 +175,7 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white" variant="outlined"
                         size="large" onClick={toggleCurrencies}>
-                    <ToggleIcon/>
+                    <SwapVert/>
                 </Button>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
                 <p className="mt-4 uppercase"><small className="text-neutral-500">Last Updated</small>
