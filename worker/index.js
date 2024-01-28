@@ -18,7 +18,7 @@ self.addEventListener("message", async (event) => {
 
             setInterval(() => {
                 self.registration.showNotification("Exchange Rate", notificationOptions);
-            }, 30000);
+            }, 1000*60*60*12);
         }
     }
 
