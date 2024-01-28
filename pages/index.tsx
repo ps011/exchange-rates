@@ -25,7 +25,7 @@ export async function getStaticProps(): Promise<{
     props: { exchangeRates: Rate | null, lastUpdated: number | null },
     revalidate: number
 }> {
-    const res: Response = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
+    const res: Response = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.NEXT_PUBLIC_API_KEY}`)
     const data = await res.json();
     return {
         props: {

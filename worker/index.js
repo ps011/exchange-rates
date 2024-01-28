@@ -10,9 +10,9 @@ self.addEventListener("message", async (event) => {
             const notificationOptions = {
                 body: `${payload.sourceCurrency} 1 → ${payload.destinationCurrency} ${exchangeRate}`,
                 icon: "icon-192.png",
-                tag: process.env.USER,
+                tag: "exchange-rate",
                 data: {
-                    url: process.env.MODE === "development" ? "http://localhost:3000" : "https://exchange-rates-delta.vercel.app/",
+                    url: process.env.NEXT_PUBLIC_MODE === "development" ? "http://localhost:3000" : "https://exchange-rates-delta.vercel.app/",
                 }
             };
 
@@ -30,7 +30,7 @@ const calculateExchangeRate = (exchangeRates, sourceCurrency, destinationCurrenc
 }
 
 const getExchangeRates = async () => {
-    const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
+    const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.NEXT_PUBLIC_API_KEY}`)
     const data = await res.json();
     return data.rates;
 }
