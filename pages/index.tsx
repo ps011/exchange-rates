@@ -6,18 +6,26 @@ import {Currency, SelectCurrency} from "../components/SelectCurrency";
 import {Button, Fab, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
 import {ToggleIcon} from "../components/ToggleIcon";
-import {NotificationAdd, NotificationsOff} from "@mui/icons-material";
+import {NotificationAdd} from "@mui/icons-material";
 
+type Rate = { [key in CurrencyCodes]: number };
 
 interface ExchangeRatesResponse {
     valid: boolean;
     updated: number;
     base: string;
-    rates: {[key in CurrencyCodes]: number};
+    rates:  Rate | null;
 }
 
-export async function getStaticProps(): Promise<{ props: { exchangeRates: ExchangeRatesResponse | null, lastUpdated: number }, revalidate: number }> {
-    const res: Response = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
+export enum MessageTypes {
+    NOTIFICATION = 'notification'
+}
+
+export async function getStaticProps(): Promise<{
+    props: { exchangeRates: Rate | null, lastUpdated: number | null },
+    revalidate: number
+}> {
+    const res: Response = await fetch<ExchangeRatesResponse>(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
     const data = await res.json();
     return {
         props: {
@@ -32,6 +40,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const SRC_KEY = 'src';
     const DEST_KEY = 'dest';
     const NOTIFICATION_KEY = 'notification';
+    const IS_CLIENT = typeof window !== "undefined";
 
     const {query} = useRouter();
     let sourceCur: Currency = {label: CURRENCIES[CurrencyCodes.EUR], value: CurrencyCodes.EUR};
@@ -41,7 +50,7 @@ export default function Home({exchangeRates, lastUpdated}) {
         return {label: CURRENCIES[value], value: value};
     }
 
-    if (typeof window !== "undefined") {
+    if (IS_CLIENT) {
         sourceCur = getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR);
         destinationCur = getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR);
     }
@@ -129,29 +138,31 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
-    // const enableNotifications = () => {
-    //     let promise = Notification.requestPermission();
-    //         promise.then(function (permission: NotificationPermission) {
-    //             if (permission === "granted") {
-    //                 localStorage.setItem(NOTIFICATION_KEY, 'true');
-    //                const interval = setInterval(() => {
-    //                    new Notification("Exchange rates", {
-    //                        body: `${sourceCurrency.value} ${sourceValue} → ${destinationCurrency.value} ${destinationValue}`,
-    //                        icon: "/favicon.ico"
-    //                    });
-    //                }, 30000);
-    //
-    //             }
-    //         });
-    // }
-    //
-    // const disableNotifications = () => {
-    //     localStorage.setItem(NOTIFICATION_KEY, 'false');
-    // }
-    //
-    // const areNotificationsEnabled = () => {
-    //     return localStorage.getItem(NOTIFICATION_KEY) === 'true';
-    // }
+    const enableNotifications = () => {
+        Notification.requestPermission()
+            .then(function (permission: NotificationPermission) {
+                if (permission === "granted") {
+
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.active.postMessage({
+                            type: MessageTypes.NOTIFICATION,
+                            payload: {
+                                sourceCurrency: sourceCurrency.value,
+                                destinationCurrency: destinationCurrency.value,
+                            }
+                        });
+                    });
+                    localStorage.setItem(NOTIFICATION_KEY, 'true');
+                }
+            });
+    }
+
+    const areNotificationsEnabled = (): boolean => {
+        if (IS_CLIENT) {
+            return localStorage.getItem(NOTIFICATION_KEY) === 'true';
+        }
+        return false;
+    };
 
     return (
         <div
@@ -163,25 +174,25 @@ export default function Home({exchangeRates, lastUpdated}) {
             <h1>Currency Exchange Rates</h1>
             <div className="sm:w-4/6 xl:w-3/6 2xl:w-2/6">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
-                <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white" variant="outlined" size="large" onClick={toggleCurrencies}>
-                    <ToggleIcon />
+                <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white" variant="outlined"
+                        size="large" onClick={toggleCurrencies}>
+                    <ToggleIcon/>
                 </Button>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                <p className="mt-4"><small>Last Updated</small> <br /> {new Date(lastUpdated*1000).toLocaleString('en-GB', { hour12:false })}</p>
+                <p className="mt-4 uppercase"><small className="text-neutral-500">Last Updated</small>
+                    <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "long"})}</p>
             </div>
             <div className="text-center flex flex-col">
                 <p className="my-0">Developed and Maintained by</p>
                 <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
-            {/*{*/}
-            {/*    areNotificationsEnabled() ?*/}
-            {/*    <Fab color="primary" aria-label="add" className="absolute bottom-16 right-8" onClick={enableNotifications}>*/}
-            {/*        <NotificationAdd />*/}
-            {/*    </Fab>       :*/}
-            {/*    <Fab color="primary" aria-label="add" className="absolute bottom-16 right-8" onClick={disableNotifications}>*/}
-            {/*        <NotificationsOff />*/}
-            {/*    </Fab>*/}
-            {/*}*/}
+            {
+                !areNotificationsEnabled() &&
+                <Fab color="primary" aria-label="add" className="absolute bottom-16 right-8"
+                     onClick={enableNotifications}>
+                    <NotificationAdd/>
+                </Fab>
+            }
 
         </div>
     )

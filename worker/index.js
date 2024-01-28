@@ -1,31 +1,36 @@
 'use strict'
 
-self.addEventListener('push', function (event) {
-    const data = {
-        message: "Hello, World!",
-    }
-    event.waitUntil(
-        registration.showNotification(data.message, {
-            body: data.message,
-            icon: '/icons/android-chrome-192x192.png'
-        })
-    )
-})
-
-self.addEventListener('notificationclick', function (event) {
-    event.notification.close()
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
-            if (clientList.length > 0) {
-                let client = clientList[0]
-                for (let i = 0; i < clientList.length; i++) {
-                    if (clientList[i].focused) {
-                        client = clientList[i]
-                    }
+self.__WB_DISABLE_DEV_LOGS = true
+self.addEventListener("message", async (event) => {
+    const payload = event.data.payload;
+    switch (event.data.type) {
+        case "notification": {
+            const rates = await getExchangeRates();
+            const exchangeRate = calculateExchangeRate(rates, payload.sourceCurrency, payload.destinationCurrency);
+            const notificationOptions = {
+                body: `${payload.sourceCurrency} 1 → ${payload.destinationCurrency} ${exchangeRate}`,
+                icon: "icon-192.png",
+                tag: process.env.USER,
+                data: {
+                    url: process.env.MODE === "development" ? "http://localhost:3000" : "https://exchange-rates-delta.vercel.app/",
                 }
-                return client.focus()
-            }
-            return clients.openWindow('/')
-        })
-    )
-})
+            };
+
+            setInterval(() => {
+                self.registration.showNotification("Exchange Rate", notificationOptions);
+            }, 30000);
+        }
+    }
+
+
+});
+
+const calculateExchangeRate = (exchangeRates, sourceCurrency, destinationCurrency) => {
+    return (parseFloat(((exchangeRates[destinationCurrency] / exchangeRates[sourceCurrency])).toFixed(2)));
+}
+
+const getExchangeRates = async () => {
+    const res = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.API_KEY}`)
+    const data = await res.json();
+    return data.rates;
+}
