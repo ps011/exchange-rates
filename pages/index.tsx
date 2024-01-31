@@ -1,11 +1,13 @@
 import {CURRENCIES, CurrencyCodes} from '../constants';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {Currency, SelectCurrency} from "../components/SelectCurrency";
 import {Button, Fab, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
 import {NotificationAdd, SwapVert} from "@mui/icons-material";
+import {analytics as firebaseAnalytics} from "../lib/firebase";
+import {logEvent} from "@firebase/analytics";
 
 type Rate = { [key in CurrencyCodes]: number };
 
@@ -67,11 +69,18 @@ export default function Home({exchangeRates, lastUpdated}) {
             currencyList.push(currency);
         });
         setCurrencyList(currencyList);
+        console.log(firebaseAnalytics);
     }, []);
 
     useEffect(() => {
         calculateExchangeRate(sourceValue);
     }, [sourceCurrency, destinationCurrency])
+
+    const event = useCallback(async () => {
+        const a = await firebaseAnalytics;
+        logEvent(a, 'toggled');
+        console.log(a, 'toggled');
+    }, []);
 
     const calculateExchangeRate = (e) => {
         if (sourceCurrency && destinationCurrency) {
@@ -88,6 +97,7 @@ export default function Home({exchangeRates, lastUpdated}) {
         const src = sourceCurrency;
         setSourceCurrency(destinationCurrency);
         setDestinationCurrency(src);
+        event();
     }
 
     const sourceCurrencySelect = () => {
