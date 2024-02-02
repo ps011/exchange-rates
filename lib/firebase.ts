@@ -1,5 +1,6 @@
 import {FirebaseApp, FirebaseOptions, getApps, initializeApp} from "firebase/app";
 import {Analytics, getAnalytics, logEvent} from "@firebase/analytics";
+import {getMessaging, getToken, Messaging} from "@firebase/messaging";
 
 export class ExchangeRatesFirebase {
     private firebaseConfig: FirebaseOptions = {
@@ -13,6 +14,7 @@ export class ExchangeRatesFirebase {
     };
 
     private app: FirebaseApp = null;
+    public token: string = null;
 
     constructor() {
         this.app = this.initializeFirebase();
@@ -28,6 +30,27 @@ export class ExchangeRatesFirebase {
         }
         return getAnalytics(this.app);
 
+    }
+
+    get messaging(): Messaging | null {
+        if (!this.app) {
+            this.app = this.initializeFirebase();
+        }
+        return getMessaging(this.app);
+    }
+
+    public async setMessagingToken(): Promise<void> {
+        try {
+            this.token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
+        } catch (e) {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                this.token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
+            } else {
+                console.warn("Permission not granted");
+            }
+        }
+        console.log("Token: ", this.token);
     }
 
     public logFirebaseEvent(eventName: string, eventParams: Record<string, string>): void {

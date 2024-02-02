@@ -8,6 +8,7 @@ import CurrencyInputGroup from "../components/CurrencyInputGroup";
 import {SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
 import {logEvent} from "@firebase/analytics";
+import {onMessage} from "@firebase/messaging";
 
 type Rate = { [key in CurrencyCodes]: number };
 
@@ -69,6 +70,11 @@ export default function Home({exchangeRates, lastUpdated}) {
 
         setSourceCurrency(getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR));
         setDestinationCurrency(getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR));
+
+        firebaseApp.setMessagingToken();
+        onMessage(firebaseApp.messaging, (payload) => {
+            console.log('Message received. ', payload);
+        });
     }, []);
 
     useEffect(() => {
