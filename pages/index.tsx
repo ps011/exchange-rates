@@ -1,11 +1,13 @@
 import {CURRENCIES, CurrencyCodes} from '../constants';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {Currency, SelectCurrency} from "../components/SelectCurrency";
-import {Button, Fab, TextField} from '@mui/material';
+import {Button, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
-import {NotificationAdd, SwapVert} from "@mui/icons-material";
+import {SwapVert} from "@mui/icons-material";
+import {ExchangeRatesFirebase} from "../lib/firebase";
+import {logEvent} from "@firebase/analytics";
 
 type Rate = { [key in CurrencyCodes]: number };
 
@@ -16,8 +18,10 @@ interface ExchangeRatesResponse {
     rates:  Rate | null;
 }
 
-export enum MessageTypes {
-    NOTIFICATION = 'notification'
+export enum Events {
+    SWAP_CURRENCIES = 'swap_currencies',
+    CHANGE_SOURCE_CURRENCY = 'change_source_currency',
+    CHANGE_DESTINATION_CURRENCY = 'change_destination_currency'
 }
 
 export async function getStaticProps(): Promise<{
@@ -25,7 +29,7 @@ export async function getStaticProps(): Promise<{
     revalidate: number
 }> {
     const res: Response = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.NEXT_PUBLIC_API_KEY}`)
-    const data = await res.json();
+    const data: ExchangeRatesResponse = await res.json();
     return {
         props: {
             exchangeRates: data.rates || null,
@@ -38,24 +42,19 @@ export async function getStaticProps(): Promise<{
 export default function Home({exchangeRates, lastUpdated}) {
     const SRC_KEY = 'src';
     const DEST_KEY = 'dest';
-    const NOTIFICATION_KEY = 'notification';
     const IS_CLIENT = typeof window !== "undefined";
 
     const {query} = useRouter();
-    let sourceCur: Currency = {label: CURRENCIES[CurrencyCodes.EUR], value: CurrencyCodes.EUR};
-    let destinationCur: Currency = {label: CURRENCIES[CurrencyCodes.INR], value: CurrencyCodes.INR};
+    const firebaseApp = useMemo(() => {
+        return new ExchangeRatesFirebase();
+    }, []);
 
     const getCurrencyFromValue = (value: string): Currency => {
         return {label: CURRENCIES[value], value: value};
     }
 
-    if (IS_CLIENT) {
-        sourceCur = getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR);
-        destinationCur = getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR);
-    }
-
-    const [sourceCurrency, setSourceCurrency] = useState(sourceCur);
-    const [destinationCurrency, setDestinationCurrency] = useState(destinationCur);
+    const [sourceCurrency, setSourceCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.EUR], value: CurrencyCodes.EUR});
+    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.INR], value: CurrencyCodes.INR});
     const [sourceValue, setSourceValue] = useState(1);
     const [destinationValue, setDestinationValue] = useState(0);
     const [currencyList, setCurrencyList] = useState([]);
@@ -67,6 +66,9 @@ export default function Home({exchangeRates, lastUpdated}) {
             currencyList.push(currency);
         });
         setCurrencyList(currencyList);
+
+        setSourceCurrency(getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR));
+        setDestinationCurrency(getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR));
     }, []);
 
     useEffect(() => {
@@ -88,6 +90,13 @@ export default function Home({exchangeRates, lastUpdated}) {
         const src = sourceCurrency;
         setSourceCurrency(destinationCurrency);
         setDestinationCurrency(src);
+
+        if (IS_CLIENT && firebaseApp) {
+            logEvent(firebaseApp.analytics, Events.SWAP_CURRENCIES, {
+                sourceCurrency: sourceCurrency.value,
+                destinationCurrency: destinationCurrency.value,
+            });
+        }
     }
 
     const sourceCurrencySelect = () => {
@@ -95,7 +104,11 @@ export default function Home({exchangeRates, lastUpdated}) {
             <SelectCurrency
                 onChange={(e) => {
                     setSourceCurrency(e);
-                    localStorage.setItem(SRC_KEY, e.value)
+                    localStorage.setItem(SRC_KEY, e.value);
+                    firebaseApp.logFirebaseEvent(Events.CHANGE_SOURCE_CURRENCY, {
+                        oldValue: sourceCurrency.value,
+                        newValue: e.value,
+                    });
                 }}
                 currencyList={currencyList}
                 currency={sourceCurrency}
@@ -108,7 +121,11 @@ export default function Home({exchangeRates, lastUpdated}) {
             <SelectCurrency
                 onChange={(e) => {
                     setDestinationCurrency(e);
-                    localStorage.setItem(DEST_KEY, e.value)
+                    localStorage.setItem(DEST_KEY, e.value);
+                    firebaseApp.logFirebaseEvent(Events.CHANGE_DESTINATION_CURRENCY, {
+                        oldValue: destinationCurrency.value,
+                        newValue: e.value,
+                    });
                 }}
                 currencyList={currencyList}
                 currency={destinationCurrency}
@@ -137,32 +154,6 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
-    const enableNotifications = () => {
-        Notification.requestPermission()
-            .then(function (permission: NotificationPermission) {
-                if (permission === "granted") {
-
-                    navigator.serviceWorker.ready.then((registration) => {
-                        registration.active.postMessage({
-                            type: MessageTypes.NOTIFICATION,
-                            payload: {
-                                sourceCurrency: sourceCurrency.value,
-                                destinationCurrency: destinationCurrency.value,
-                            }
-                        });
-                    localStorage.setItem(NOTIFICATION_KEY, 'true');
-                    });
-                }
-            });
-    }
-
-    const areNotificationsEnabled = (): boolean => {
-        if (IS_CLIENT) {
-            return localStorage.getItem(NOTIFICATION_KEY) === 'true';
-        }
-        return false;
-    };
-
     return (
         <div
             className="flex flex-col justify-between items-center h-full w-screen text-center dark:bg-blue-950 dark:text-white">
@@ -185,14 +176,6 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <p className="my-0">Developed and Maintained by</p>
                 <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
-            {
-                !areNotificationsEnabled() &&
-                <Fab color="primary" aria-label="add" className="absolute bottom-16 right-8"
-                     onClick={enableNotifications}>
-                    <NotificationAdd/>
-                </Fab>
-            }
-
         </div>
     )
 }
