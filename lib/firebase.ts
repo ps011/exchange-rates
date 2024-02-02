@@ -16,11 +16,6 @@ export class ExchangeRatesFirebase {
 
     constructor() {
         this.app = this.initializeFirebase();
-        if (this.app) {
-            const a = getAnalytics(this.app);
-            console.log("Analytics: ", a);
-            logEvent(a, "test_event", {name: "PS"}, {global: true});
-        }
     }
 
     get firebaseApp(): FirebaseApp {
@@ -35,10 +30,15 @@ export class ExchangeRatesFirebase {
 
     }
 
+    public logFirebaseEvent(eventName: string, eventParams: Record<string, string>): void {
+        if (this.analytics) {
+            logEvent(this.analytics, eventName, eventParams);
+        }
+    }
+
     private initializeFirebase(): FirebaseApp {
         if (typeof window !== "undefined") {
             if (!getApps().length) {
-                console.log("Initializing Firebase");
                 return initializeApp(this.firebaseConfig);
             } else {
                 return getApps()[0];
