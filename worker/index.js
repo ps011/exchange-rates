@@ -1,5 +1,3 @@
-'use strict'
-
 self.__WB_DISABLE_DEV_LOGS = true
 
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
@@ -18,16 +16,13 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    console.log(
-        '[firebase-messaging-sw.js] Received background message ',
-        payload
-    );
-    // Customize notification here
-    const notificationTitle = 'Background Message Title';
-    const notificationOptions = {
-        body: 'Background Message body.',
-        icon: '/firebase-logo.png'
-    };
-
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    if (payload.data && payload.data.title && payload.data.body) {
+        // Customize notification here
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+            body: payload.notification.body,
+            icon: '/assets/icons/icon-192x192.png'
+        };
+        self.registration.showNotification(notificationTitle, notificationOptions);
+    }
 });
