@@ -3,9 +3,9 @@ import {useState, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {Currency, SelectCurrency} from "../components/SelectCurrency";
-import {Button, TextField} from '@mui/material';
+import {Button, Fab, Snackbar, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
-import {SwapVert} from "@mui/icons-material";
+import {Close, NotificationAdd, SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
 import {logEvent} from "@firebase/analytics";
 import {onMessage} from "@firebase/messaging";
@@ -16,7 +16,7 @@ interface ExchangeRatesResponse {
     valid: boolean;
     updated: number;
     base: string;
-    rates:  Rate | null;
+    rates: Rate | null;
 }
 
 export enum Events {
@@ -54,11 +54,19 @@ export default function Home({exchangeRates, lastUpdated}) {
         return {label: CURRENCIES[value], value: value};
     }
 
-    const [sourceCurrency, setSourceCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.EUR], value: CurrencyCodes.EUR});
-    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.INR], value: CurrencyCodes.INR});
+    const [sourceCurrency, setSourceCurrency] = useState<Currency>({
+        label: CURRENCIES[CurrencyCodes.EUR],
+        value: CurrencyCodes.EUR
+    });
+    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({
+        label: CURRENCIES[CurrencyCodes.INR],
+        value: CurrencyCodes.INR
+    });
     const [sourceValue, setSourceValue] = useState(1);
     const [destinationValue, setDestinationValue] = useState(0);
     const [currencyList, setCurrencyList] = useState([]);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     useEffect(() => {
         const currencyList: Currency[] = []
@@ -71,7 +79,6 @@ export default function Home({exchangeRates, lastUpdated}) {
         setSourceCurrency(getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR));
         setDestinationCurrency(getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR));
 
-        firebaseApp.setMessagingToken();
         onMessage(firebaseApp.messaging, (payload) => {
             console.log('Message received. ', payload);
         });
@@ -160,6 +167,22 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
+    const subscribeToNotifications = () => {
+        firebaseApp.subscribeToNotifications({
+            source: sourceCurrency.value,
+            destination: destinationCurrency.value,
+            timezoneOffset: new Date().getTimezoneOffset()
+        }).then((isSet) => {
+            if (isSet) {
+                setSnackbarMessage(`Subscribed to notifications for ${sourceCurrency.value} → ${destinationCurrency.value}`);
+                setShowSnackbar(true);
+            } else {
+                setSnackbarMessage("Please grant permission to receive notifications");
+                setShowSnackbar(true);
+            }
+        })
+    }
+
     return (
         <div
             className="flex flex-col justify-between items-center h-full w-screen text-center dark:bg-blue-950 dark:text-white">
@@ -182,6 +205,21 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <p className="my-0">Developed and Maintained by</p>
                 <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
+            <Fab color="primary" aria-label="add" className="fixed bottom-16 right-8" onClick={subscribeToNotifications}>
+                <NotificationAdd/>
+            </Fab>
+            <Snackbar
+                open={showSnackbar}
+                autoHideDuration={5000}
+                onClose={() => setShowSnackbar(false)}
+                message={snackbarMessage}
+                action={
+                    <Button color="inherit" size="small" onClick={() => setShowSnackbar(false)}>
+                        <Close/>
+                    </Button>
+                }
+                className="bottom-30"
+            />
         </div>
     )
 }
