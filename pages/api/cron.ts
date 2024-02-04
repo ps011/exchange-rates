@@ -17,10 +17,13 @@ export default async function handler(
     try {
         const data = await getDataset();
         await processDataset(data);
+        response.status(200).end();
     } catch (error) {
         console.error(error);
+        response.write(error.message);
+        response.status(500);
+        response.end();
     }
-    response.status(200).end();
 }
 
 async function getDataset(): Promise<{ [key: string]: NotificationData }> {
@@ -33,15 +36,16 @@ async function getDataset(): Promise<{ [key: string]: NotificationData }> {
     }
 }
 
-async function processDataset(data: { [key: string]: NotificationData }) {
-    const token = await fetchAccessToken();
+async function processDataset(data: { [key: string]: NotificationData }): Promise<void> {
+    const accessToken = await fetchAccessToken();
     const {rates} = await fetchExchangeRates();
-    Object.keys(data).forEach(async (key) => {
-        await sendNotification(key, data[key], rates, token);
-    });
+    for (const key of Object.keys(data)) {
+        await sendNotification(key, data[key], rates, accessToken)
+    }
+
 }
 
-async function sendNotification(key: string, value: NotificationData, rates: Rate, token: string) {
+async function sendNotification(key: string, value: NotificationData, rates: Rate, token: string): Promise<void> {
     try {
         await fetch(process.env.NEXT_PUBLIC_FIREBASE_NOTIFICATIONS_SEND_URL, {
             method: 'POST',
