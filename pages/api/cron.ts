@@ -58,11 +58,15 @@ async function sendNotification(key: string, value: NotificationData, rates: Rat
                     message: {
                         token: key,
                         data: {
-                            title: 'Currency Exchange Rate Update',
-                            body: `
-                            ${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyFromValue(value.source), getCurrencyFromValue(value.destination), rates, 1)}`,
+                            body: 'Currency Exchange Rate Update',
+                            title: `${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyFromValue(value.source), getCurrencyFromValue(value.destination), rates, 1)}`,
                         },
-                    }
+                    },
+                    android: {
+                        notification: {
+                            icon: "/favicon.ico",
+                        }
+                    },
                 }
             ),
         });
