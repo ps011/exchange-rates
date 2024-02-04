@@ -18,9 +18,9 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     if (payload.data && payload.data.title && payload.data.body) {
         // Customize notification here
-        const notificationTitle = payload.notification.title;
+        const notificationTitle = payload.data.title;
         const notificationOptions = {
-            body: payload.notification.body,
+            body: payload.data.body,
             icon: '/assets/icons/icon-192x192.png'
         };
         self.registration.showNotification(notificationTitle, notificationOptions);

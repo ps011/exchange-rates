@@ -171,7 +171,8 @@ export default function Home({exchangeRates, lastUpdated}) {
         firebaseApp.subscribeToNotifications({
             source: sourceCurrency.value,
             destination: destinationCurrency.value,
-            timezoneOffset: new Date().getTimezoneOffset()
+            timezoneOffset: new Date().getTimezoneOffset(),
+            subscribedAt: new Date().toISOString(),
         }).then((isSet) => {
             if (isSet) {
                 setSnackbarMessage(`Subscribed to notifications for ${sourceCurrency.value} → ${destinationCurrency.value}`);

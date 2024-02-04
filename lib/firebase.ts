@@ -47,10 +47,11 @@ export class ExchangeRatesFirebase {
         return getDatabase(this.app);
     }
 
-    public async subscribeToNotifications({source, destination, timezoneOffset}: {
+    public async subscribeToNotifications({source, destination, timezoneOffset, subscribedAt}: {
         source: string,
         destination: string,
         timezoneOffset: number
+        subscribedAt: string
     }): Promise<boolean> {
         let token = null;
         return getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY})
@@ -59,7 +60,8 @@ export class ExchangeRatesFirebase {
                 set(ref(this.database, 'notifications/' + token), {
                     source,
                     destination,
-                    timezoneOffset
+                    timezoneOffset,
+                    subscribedAt
                 });
                 return Promise.resolve(true);
             })
