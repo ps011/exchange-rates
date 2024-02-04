@@ -12,6 +12,7 @@
 /.next/
 /out/
 /public/workbox-*.js
+/public/*-sw.js
 /public/sw.js
 /public/worker-development.js
 

@@ -2,21 +2,22 @@ import {CURRENCIES, CurrencyCodes} from '../constants';
 import {useState, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import {Currency, SelectCurrency} from "../components/SelectCurrency";
-import {Button, TextField} from '@mui/material';
+import {SelectCurrency} from "../components/SelectCurrency";
+import {Button, Fab, Snackbar, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
-import {SwapVert} from "@mui/icons-material";
+import {Close, NotificationAdd, SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
 import {logEvent} from "@firebase/analytics";
+import {onMessage} from "@firebase/messaging";
+import {
+    Currency,
+    fetchExchangeRates, getConvertedValue,
+    getCurrencyFromValue,
+    getCurrencyList,
+    Rate
+} from "../lib/exchange-rates-api";
 
-type Rate = { [key in CurrencyCodes]: number };
 
-interface ExchangeRatesResponse {
-    valid: boolean;
-    updated: number;
-    base: string;
-    rates:  Rate | null;
-}
 
 export enum Events {
     SWAP_CURRENCIES = 'swap_currencies',
@@ -28,12 +29,12 @@ export async function getStaticProps(): Promise<{
     props: { exchangeRates: Rate | null, lastUpdated: number | null },
     revalidate: number
 }> {
-    const res: Response = await fetch(`https://currencyapi.net/api/v1/rates?key=${process.env.NEXT_PUBLIC_API_KEY}`)
-    const data: ExchangeRatesResponse = await res.json();
+
+    const data = await fetchExchangeRates();
     return {
         props: {
             exchangeRates: data.rates || null,
-            lastUpdated: data.updated || null,
+            lastUpdated: data.lastUpdated || null,
         },
         revalidate: 3600,
     }
@@ -49,26 +50,33 @@ export default function Home({exchangeRates, lastUpdated}) {
         return new ExchangeRatesFirebase();
     }, []);
 
-    const getCurrencyFromValue = (value: string): Currency => {
-        return {label: CURRENCIES[value], value: value};
-    }
-
-    const [sourceCurrency, setSourceCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.EUR], value: CurrencyCodes.EUR});
-    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({label: CURRENCIES[CurrencyCodes.INR], value: CurrencyCodes.INR});
+    const [sourceCurrency, setSourceCurrency] = useState<Currency>({
+        label: CURRENCIES[CurrencyCodes.EUR],
+        value: CurrencyCodes.EUR
+    });
+    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({
+        label: CURRENCIES[CurrencyCodes.INR],
+        value: CurrencyCodes.INR
+    });
     const [sourceValue, setSourceValue] = useState(1);
     const [destinationValue, setDestinationValue] = useState(0);
     const [currencyList, setCurrencyList] = useState([]);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     useEffect(() => {
-        const currencyList: Currency[] = []
-        Object.keys(CURRENCIES).map(key => {
-            const currency: Currency = {label: CURRENCIES[key], value: key};
-            currencyList.push(currency);
-        });
-        setCurrencyList(currencyList);
+        setCurrencyList(getCurrencyList());
 
-        setSourceCurrency(getCurrencyFromValue((query.src as string) || localStorage.getItem(SRC_KEY) || CurrencyCodes.EUR));
-        setDestinationCurrency(getCurrencyFromValue((query.dest as string) || localStorage.getItem(DEST_KEY) || CurrencyCodes.INR));
+        setSourceCurrency(getCurrencyFromValue((query.src as CurrencyCodes) || localStorage.getItem(SRC_KEY) as CurrencyCodes || CurrencyCodes.EUR));
+        setDestinationCurrency(getCurrencyFromValue((query.dest as CurrencyCodes) || localStorage.getItem(DEST_KEY) as CurrencyCodes || CurrencyCodes.INR));
+
+        onMessage(firebaseApp.messaging, (payload) => {
+            new Notification(payload.data.title, {
+                body: payload.data.body,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+            })
+        });
     }, []);
 
     useEffect(() => {
@@ -76,11 +84,13 @@ export default function Home({exchangeRates, lastUpdated}) {
     }, [sourceCurrency, destinationCurrency])
 
     const calculateExchangeRate = (e) => {
-        if (sourceCurrency && destinationCurrency) {
+        const value = getConvertedValue(sourceCurrency, destinationCurrency, exchangeRates, e);
+        if (value) {
             setSourceValue(e)
-            setDestinationValue(parseFloat((e * (exchangeRates[destinationCurrency.value] / exchangeRates[sourceCurrency.value])).toFixed(2)));
+            setDestinationValue(value);
         } else {
-            alert('Please Select Currencies')
+            setSnackbarMessage("Failed to calculate exchange rates");
+            setShowSnackbar(true);
         }
     }
 
@@ -154,6 +164,23 @@ export default function Home({exchangeRates, lastUpdated}) {
         )
     }
 
+    const subscribeToNotifications = () => {
+        firebaseApp.subscribeToNotifications({
+            source: sourceCurrency.value,
+            destination: destinationCurrency.value,
+            timezoneOffset: new Date().getTimezoneOffset(),
+            subscribedAt: new Date().toISOString(),
+        }).then((isSet) => {
+            if (isSet) {
+                setSnackbarMessage(`Subscribed to notifications for ${sourceCurrency.value} → ${destinationCurrency.value}`);
+                setShowSnackbar(true);
+            } else {
+                setSnackbarMessage("Please grant permission to receive notifications");
+                setShowSnackbar(true);
+            }
+        })
+    }
+
     return (
         <div
             className="flex flex-col justify-between items-center h-full w-screen text-center dark:bg-blue-950 dark:text-white">
@@ -176,6 +203,21 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <p className="my-0">Developed and Maintained by</p>
                 <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
+            <Fab color="primary" aria-label="add" className="fixed bottom-16 right-8" onClick={subscribeToNotifications}>
+                <NotificationAdd/>
+            </Fab>
+            <Snackbar
+                open={showSnackbar}
+                autoHideDuration={5000}
+                onClose={() => setShowSnackbar(false)}
+                message={snackbarMessage}
+                action={
+                    <Button color="inherit" size="small" onClick={() => setShowSnackbar(false)}>
+                        <Close/>
+                    </Button>
+                }
+                className="bottom-30"
+            />
         </div>
     )
 }
