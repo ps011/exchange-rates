@@ -1,9 +1,11 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {JWT} from "google-auth-library";
+import {fetchExchangeRates, getConvertedValue, getCurrencyFromValue, Rate} from "../../lib/exchange-rates-api";
+import {CurrencyCodes} from "../../constants";
 
 interface NotificationData {
-    source: string;
-    destination: string;
+    source: CurrencyCodes;
+    destination: CurrencyCodes;
     timezoneOffset: number;
     subscribedAt: string;
 }
@@ -33,15 +35,14 @@ async function getDataset(): Promise<{ [key: string]: NotificationData }> {
 
 async function processDataset(data: { [key: string]: NotificationData }) {
     const token = await fetchAccessToken();
+    const {rates} = await fetchExchangeRates();
     Object.keys(data).forEach(async (key) => {
-        await sendNotification(key, data[key], token);
+        await sendNotification(key, data[key], rates, token);
     });
 }
 
-async function sendNotification(key: string, value: NotificationData, token: string) {
+async function sendNotification(key: string, value: NotificationData, rates: Rate, token: string) {
     try {
-
-
         await fetch(process.env.NEXT_PUBLIC_FIREBASE_NOTIFICATIONS_SEND_URL, {
             method: 'POST',
             headers: {
@@ -54,7 +55,8 @@ async function sendNotification(key: string, value: NotificationData, token: str
                         token: key,
                         data: {
                             title: 'Currency Exchange Rate Update',
-                            body: `${value.source} -> ${value.destination}`,
+                            body: `
+                            ${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyFromValue(value.source), getCurrencyFromValue(value.destination), rates, 1)}`,
                         },
                     }
                 }

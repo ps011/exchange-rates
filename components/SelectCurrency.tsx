@@ -1,9 +1,5 @@
 import {Autocomplete, TextField} from "@mui/material";
-
-export interface Currency {
-    label: string;
-    value: string;
-}
+import {Currency} from "../lib/exchange-rates-api";
 
 interface SelectCurrencyProps {
     onChange: (e: Currency) => void;
@@ -27,9 +23,9 @@ export function SelectCurrency({onChange, currencyList, currency}: SelectCurrenc
             value={currency}
             isOptionEqualToValue={isOptionEqualToValue}
             filterOptions={filterOptions}
-            disableClearable={true}
-            onChange={(_e, v) => onChange(v)}
+            onChange={(_e, v) => onChange(v as Currency)}
             renderInput={(params) => <TextField className="text-black" {...params}/>}
+            disableClearable
         />
     )
 }
