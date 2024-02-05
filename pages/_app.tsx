@@ -1,15 +1,14 @@
 import {CssBaseline} from "@mui/material";
 import '../styles/global.css';
-import {useEffect} from "react";
-import {ExchangeRatesFirebase} from "../lib/firebase";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 function ExchangeRates({Component, pageProps}) {
-    useEffect(() => {
-        const firebaseApp = new ExchangeRatesFirebase();
-    }, [ExchangeRatesFirebase]);
     return (<>
+        <Header />
             <CssBaseline/>
             <Component {...pageProps} />
+        <Footer/>
     </>)
 }
 
