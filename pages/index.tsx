@@ -1,6 +1,5 @@
 import {CURRENCIES, CurrencyCodes} from '../constants';
 import {useState, useEffect, useMemo} from 'react';
-import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {SelectCurrency} from "../components/SelectCurrency";
 import {Button, Snackbar, TextField} from '@mui/material';
@@ -145,7 +144,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const sourceCurrencyInput = () => {
         return (
             <TextField
-                className="w-full rounded dark:bg-white"
+                className="font-josefin w-full rounded dark:bg-white"
                 type="number"
                 value={sourceValue}
                 onChange={(e) => calculateExchangeRate(e.target.value)}/>
@@ -155,7 +154,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const destinationCurrencyInput = () => {
         return (
             <TextField
-                className="w-full rounded dark:bg-white"
+                className="font-josefin w-full rounded dark:bg-white"
                 type="number"
                 value={destinationValue}
                 disabled
@@ -201,10 +200,6 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
                 <p className="mt-4 uppercase"><small className="text-neutral-500">Last Updated</small>
                     <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "short"})}</p>
-            </div>
-            <div className="text-center flex flex-col">
-                <p className="my-0">Developed and Maintained by</p>
-                <Link href="https://ps011.github.io">Prasheel Soni</Link>
             </div>
             <Snackbar
                 open={showSnackbar}
