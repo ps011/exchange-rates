@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.prasheel.currency_exchange_rates",
+        "sha256_cert_fingerprints": ["6D:1D:06:37:51:B3:98:B2:6E:8C:36:3F:73:8B:18:DF:E7:16:BD:6C:46:D9:3C:67:1D:48:62:79:27:3C:2A:67"]
+      }
+    }]
