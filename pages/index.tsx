@@ -191,7 +191,7 @@ export default function Home({exchangeRates, lastUpdated}) {
             <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <div className="flex justify-center">
-                    <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white mr-2" variant="outlined"
+                    <Button className="text-blue-400 bg-white mr-2 dark:bg-blue-400 dark:text-white"
                             size="large" onClick={toggleCurrencies}>
                         <SwapVert/>
                     </Button>

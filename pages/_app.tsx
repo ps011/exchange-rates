@@ -5,9 +5,9 @@ import Header from "../components/Header";
 
 function ExchangeRates({Component, pageProps}) {
     return (<>
-        <Header />
-            <CssBaseline/>
-            <Component {...pageProps} />
+        <CssBaseline/>
+        <Header/>
+        <Component {...pageProps} />
         <Footer/>
     </>)
 }
