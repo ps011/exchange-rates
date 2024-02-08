@@ -14,7 +14,7 @@ export default function Header() {
         logEvent(getAnalytics(firebaseApp.firebaseApp), Events.HEADER_LINK_CLICKED, {name})
     }
     return (
-        <AppBar position="sticky" className="bg-blue-950">
+        <AppBar position="sticky" classes={{root: "bg-blue-950"}}>
             <Toolbar>
                 <IconButton
                     size="large"
