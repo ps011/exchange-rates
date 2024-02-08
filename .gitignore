@@ -13,6 +13,7 @@
 /out/
 /public/workbox-*.js
 /public/*-sw.js
+/public/worker*.js
 /public/sw.js
 /public/worker-development.js
 
