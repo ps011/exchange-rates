@@ -183,7 +183,7 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     return (
         <div
-            className="flex items-center justify-center w-screen text-center h-[calc(100%-212px)]">
+            className="flex items-center justify-center w-screen text-center h-[calc(100%-244px)] md:h-[calc(100%-212px)]">
             {
                 destinationValue &&
                 <title>{sourceCurrency.value} {sourceValue} → {destinationCurrency.value} {destinationValue}</title>
