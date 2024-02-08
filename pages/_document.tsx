@@ -41,7 +41,7 @@ class ExchangeRatesDocument extends Document {
                     <meta property="og:url" content="https://exchange-rates-delta.vercel.app/" />
                     <meta property="og:image" content="https://exchange-rates-delta.vercel.app/assets/icons/apple-touch-icon.png" />
                 </Head>
-                <body>
+                <body className="font-josefin dark:bg-gray-900 dark:text-white">
                 <Main />
                 <NextScript/>
                 </body>

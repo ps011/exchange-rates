@@ -1,9 +1,8 @@
 import {CURRENCIES, CurrencyCodes} from '../constants';
 import {useState, useEffect, useMemo} from 'react';
-import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {SelectCurrency} from "../components/SelectCurrency";
-import {Button, Fab, Snackbar, TextField} from '@mui/material';
+import {Button, Snackbar, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
 import {Close, NotificationAdd, SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
@@ -18,11 +17,12 @@ import {
 } from "../lib/exchange-rates-api";
 
 
-
 export enum Events {
     SWAP_CURRENCIES = 'swap_currencies',
     CHANGE_SOURCE_CURRENCY = 'change_source_currency',
-    CHANGE_DESTINATION_CURRENCY = 'change_destination_currency'
+    CHANGE_DESTINATION_CURRENCY = 'change_destination_currency',
+    FOOTER_LINK_CLICKED = 'footer_link_clicked',
+    HEADER_LINK_CLICKED = 'header_link_clicked',
 }
 
 export async function getStaticProps(): Promise<{
@@ -146,7 +146,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const sourceCurrencyInput = () => {
         return (
             <TextField
-                className="w-full rounded dark:bg-white"
+                className="font-josefin w-full rounded dark:bg-white"
                 type="number"
                 value={sourceValue}
                 onChange={(e) => calculateExchangeRate(e.target.value)}/>
@@ -156,7 +156,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const destinationCurrencyInput = () => {
         return (
             <TextField
-                className="w-full rounded dark:bg-white"
+                className="font-josefin w-full rounded dark:bg-white"
                 type="number"
                 value={destinationValue}
                 disabled
@@ -183,29 +183,26 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     return (
         <div
-            className="flex flex-col justify-between items-center h-full w-screen text-center dark:bg-blue-950 dark:text-white">
+            className="flex items-center justify-center w-screen text-center h-[calc(100%-244px)] md:h-[calc(100%-212px)]">
             {
                 destinationValue &&
                 <title>{sourceCurrency.value} {sourceValue} → {destinationCurrency.value} {destinationValue}</title>
             }
-            <h1>Currency Exchange Rates</h1>
-            <div className="sm:w-4/6 xl:w-3/6 2xl:w-2/6">
+            <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
-                <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white" variant="outlined"
-                        size="large" onClick={toggleCurrencies}>
-                    <SwapVert/>
-                </Button>
+                <div className="flex justify-center">
+                    <Button classes={{root: "mr-2 dark:text-white"}} variant="outlined" color="primary"
+                            size="large" onClick={toggleCurrencies}>
+                        <SwapVert/>
+                    </Button>
+                    <Button color="primary" onClick={subscribeToNotifications}>
+                        <NotificationAdd/>
+                    </Button>
+                </div>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
                 <p className="mt-4 uppercase"><small className="text-neutral-500">Last Updated</small>
-                    <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "long"})}</p>
+                    <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "short"})}</p>
             </div>
-            <div className="text-center flex flex-col">
-                <p className="my-0">Developed and Maintained by</p>
-                <Link href="https://ps011.github.io">Prasheel Soni</Link>
-            </div>
-            <Fab color="primary" aria-label="add" className="fixed bottom-16 right-8" onClick={subscribeToNotifications}>
-                <NotificationAdd/>
-            </Fab>
             <Snackbar
                 open={showSnackbar}
                 autoHideDuration={5000}

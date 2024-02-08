@@ -21,7 +21,7 @@ export function SelectCurrency({onChange, currencyList, currency}: SelectCurrenc
 
     return (
         <Autocomplete
-            classes={{inputRoot: "dark:bg-white"}}
+            classes={{inputRoot: "dark:bg-white font-josefin"}}
             options={currencyList}
             value={currency}
             isOptionEqualToValue={isOptionEqualToValue}
