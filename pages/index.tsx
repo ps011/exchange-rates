@@ -20,7 +20,9 @@ import {
 export enum Events {
     SWAP_CURRENCIES = 'swap_currencies',
     CHANGE_SOURCE_CURRENCY = 'change_source_currency',
-    CHANGE_DESTINATION_CURRENCY = 'change_destination_currency'
+    CHANGE_DESTINATION_CURRENCY = 'change_destination_currency',
+    FOOTER_LINK_CLICKED = 'footer_link_clicked',
+    HEADER_LINK_CLICKED = 'header_link_clicked',
 }
 
 export async function getStaticProps(): Promise<{
@@ -181,12 +183,12 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     return (
         <div
-            className="flex flex-col justify-start items-center h-full w-screen text-center">
+            className="flex items-center justify-center w-screen text-center h-[calc(100%-212px)]">
             {
                 destinationValue &&
                 <title>{sourceCurrency.value} {sourceValue} → {destinationCurrency.value} {destinationValue}</title>
             }
-            <div className="sm:w-5/6 xl:w-3/6 2xl:w-2/6 mt-24">
+            <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <div className="flex justify-center">
                     <Button className="text-blue-400 bg-white dark:bg-blue-400 dark:text-white mr-2" variant="outlined"
