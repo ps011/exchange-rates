@@ -35,7 +35,7 @@ jobs:
         id: "version"
         run: |
           npm version major
-          echo "{version}={npm run --silent get-version}" >> $GITHUB_OUTPUT
+          echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
           git checkout -b "release-v${{ steps.version.outputs.version }}"
