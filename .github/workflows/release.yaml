@@ -53,7 +53,9 @@ jobs:
     steps:
       - name: Checkout release branch
         uses: actions/checkout@v3
-        ref: release-v${{steps.version.outputs.version}}
+        with:
+          ref: release-v${{steps.version.outputs.version}}
+          fetch-depth: 1
       - name: Merge release branch to master
         run: |
           git checkout main
@@ -65,7 +67,9 @@ jobs:
     steps:
       - name: Checkout develop branch
         uses: actions/checkout@v3
-        ref: develop
+        with:
+          ref: develop
+          fetch-depth: 0
       - name: Back-merge master to develop
         run: |
           git merge main -m "Back-merge master changes to develop"
