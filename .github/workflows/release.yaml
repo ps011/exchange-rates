@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: npm install
+        run: npm install --frozen-lockfile
       - name: Set env vars
         run: mv .env.example .env
       - name: Build app
@@ -35,7 +35,7 @@ jobs:
         id: "version"
         run: |
           npm version major
-          echo "{version}={npm run --silent get-version}" >> $GITHUB_OUTPUT
+          echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
           git checkout -b "release-v${{ steps.version.outputs.version }}"
