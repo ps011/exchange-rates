@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: npm install
+        run: npm install --frozen-lockfile
       - name: Set env vars
         run: mv .env.example .env
       - name: Build app
