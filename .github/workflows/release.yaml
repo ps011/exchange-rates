@@ -44,10 +44,6 @@ jobs:
           git checkout -b "release/v$(npm run --silent get-version)"
           git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
           echo ${{steps.version.outputs.version}}
-      - name: "Commit package.json"
-        run: |
-          git add package.json
-          git commit -m "v${{steps.version.outputs.version}} from Github Actions"
       - name: "Push changes to origin"
         run: git push origin +release/v${{steps.version.outputs.version}}:release/v${{steps.version.outputs.version}}
 
