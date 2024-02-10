@@ -36,11 +36,11 @@ This is a Next.JS based application to convert one currency into another using t
     - ~~As a user, I should be able to see the last changed time in my timezone~~ ✅
 
 - Tech
-    - Add Header and Footer
+    - ~~Add Header and Footer~~ ✅
     - Add animations
-    - Migrate to Next.JS 13
-    - Publish the app on play store
-    - Start using github actions for CI/CD
+    - ~~Migrate to Next.JS 13~~ ✅
+    - ~~Publish the app on play store~~ ✅
+    - ~~Start using github actions for CI/CD~~ ✅
     - ~~Migrate to typescript~~ ✅
     - ~~Add a favicon~~ ✅
     - ~~Add better Dark mode~~ ✅
