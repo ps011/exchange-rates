@@ -64,6 +64,10 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
+      - name: Setup Git context
+        run: |
+          git config --local user.name "Prasheel Bot"
+          git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Merge release
         run: |
           git fetch
@@ -86,6 +90,10 @@ jobs:
         with:
           ref: develop
           fetch-depth: 0
+      - name: Setup Git context
+        run: |
+          git config --local user.name "Prasheel Bot"
+          git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Back-merge master to develop
         run: |
           git merge main -m "Back-merge master changes to develop"
