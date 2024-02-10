@@ -44,7 +44,7 @@ jobs:
 
   merge-release-to-master:
     runs-on: ubuntu-latest
-    needs: deploy-to-vercel
+    needs: version-bump-and-release
     steps:
       - name: Checkout release branch
         uses: actions/checkout@v3
