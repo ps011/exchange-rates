@@ -51,8 +51,8 @@ jobs:
           echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
-          git checkout -b "release/v${{steps.version.outputs.version}}"
-          git push origin "release/v${{steps.version.outputs.version}}"
+          git checkout -b release/v${{ steps.version.outputs.version }}
+          git push origin release/v${{ steps.version.outputs.version }}
 
   merge-release-to-master:
     runs-on: ubuntu-latest
@@ -68,10 +68,10 @@ jobs:
           git fetch
           git checkout main
           git pull origin main
-          git merge --no-ff release/v${{needs.version-bump-and-release.outputs.version}}
+          git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
           git push origin main
-          git push origin :release/v${{needs.version-bump-and-release.outputs.version}}
-          git tag -a v${{needs.version-bump-and-release.outputs.version}} -m v${{needs.version-bump-and-release.outputs.version}}
+          git push origin :release/v${{ needs.version-bump-and-release.outputs.version }}
+          git tag -a v${{ needs.version-bump-and-release.outputs.version }} -m v${{ needs.version-bump-and-release.outputs.version }}
 
   back-merge-master-to-develop:
     runs-on: ubuntu-latest
