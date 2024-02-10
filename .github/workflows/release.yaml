@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: npm install --frozen-lockfile
+        run: npm ci
       - name: Set env vars
         run: mv .env.example .env
       - name: Build app
@@ -37,11 +37,9 @@ jobs:
         run: |
           npm version major
           echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
-      - name: Print branch name
-        run: echo ${{steps.version.outputs.version}}
       - name: Create release branch based on version
         run: |
-          git checkout -b "release/v$(npm run --silent get-version)"
+          git checkout -b "release/v${{steps.version.outputs.version}}"
           git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
           echo ${{steps.version.outputs.version}}
       - name: "Push changes to origin"
