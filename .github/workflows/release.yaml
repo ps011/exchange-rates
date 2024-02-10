@@ -2,8 +2,10 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [closed]
-    branches: [ develop ]
+    types: [opened, synchronize, labeled]
+#    types: [closed]
+#    branches: [ develop ]
+
 
 jobs:
   build:
@@ -40,18 +42,6 @@ jobs:
         run: |
           git checkout -b "release-v${{ steps.version.outputs.version }}"
           git merge ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
-
-  deploy-to-vercel:
-    runs-on: ubuntu-latest
-    needs: version-bump-and-release
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Vercel CLI
-        run: npm install -g vercel@latest
-      - name: Login to Vercel
-        run: vercel login --token ${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy to Vercel (release branch)
-        run: vercel --prod --org ${{ secrets.VERCEL_ORG_ID }} ${{ secrets.VERCEL_PROJECT_ID }} --prerelease
 
   merge-release-to-master:
     runs-on: ubuntu-latest
