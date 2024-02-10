@@ -42,7 +42,7 @@ jobs:
       - name: Create release branch based on version
         run: |
           git checkout -b "release/v$(npm run --silent get-version)"
-          git merge -no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
+          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
           echo ${{steps.version.outputs.version}}
       - name: "Commit package.json"
         run: |
