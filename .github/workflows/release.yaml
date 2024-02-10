@@ -4,6 +4,18 @@ on:
   pull_request:
     types: [ closed ]
     branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Release Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
 
 jobs:
   build:
@@ -23,10 +35,10 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Checkout main
+      - name: Checkout develop
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: develop
           fetch-depth: 0
       - name: Setup Git context
         run: |
@@ -60,10 +72,9 @@ jobs:
           git checkout main
           git pull origin main
           git merge --no-ff release/v${{needs.version-bump-and-release.outputs.version}}
-          git push origin master
+          git push origin main
           git push origin :release/v${{needs.version-bump-and-release.outputs.version}}
           git tag -a v${{needs.version-bump-and-release.outputs.version}} -m v${{needs.version-bump-and-release.outputs.version}}
-          git push origin v${{needs.version-bump-and-release.outputs.version}}
 
   back-merge-master-to-develop:
     runs-on: ubuntu-latest
