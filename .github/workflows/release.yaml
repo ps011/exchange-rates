@@ -16,7 +16,6 @@ on:
           - minor
           - patch
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,11 +47,12 @@ jobs:
         id: "version"
         run: |
           npm version major
-          echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
+          echo "version=$(npm run --silent get-version)" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
-          git checkout -b release/v${{ steps.version.outputs.version }}
-          git push origin release/v${{ steps.version.outputs.version }}
+          git checkout -b "release/v$(npm run --silent get-version)"
+          git push origin "release/v$(npm run --silent get-version)"
+          echo "### {{ steps.version.outputs.version }} :rocket: $(npm run --silent get-version)" >> $GITHUB_STEP_SUMMARY
 
   merge-release-to-master:
     runs-on: ubuntu-latest
@@ -63,13 +63,20 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
+      - name: Setup Git context
+        run: |
+          git config --local user.name "Prasheel Bot"
+          git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Merge release
         run: |
           git fetch
           git checkout main
           git pull origin main
+          git fetch
+          git checkout --track origin/release/v${{ needs.version-bump-and-release.outputs.version }}
+          git checkout main
           git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
-          git push origin main
+          git push origin main -f
           git push origin :release/v${{ needs.version-bump-and-release.outputs.version }}
           git tag -a v${{ needs.version-bump-and-release.outputs.version }} -m v${{ needs.version-bump-and-release.outputs.version }}
 
@@ -82,6 +89,14 @@ jobs:
         with:
           ref: develop
           fetch-depth: 0
+      - name: Setup Git context
+        run: |
+          git config --local user.name "Prasheel Bot"
+          git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Back-merge master to develop
         run: |
-          git merge main -m "Back-merge master changes to develop"
+          git fetch
+          git checkout --track origin/main
+          git checkout develop
+          git merge origin/main -m "Back-merge master changes to develop"
+          git push origin develop -f
