@@ -2,8 +2,20 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [closed]
+    types: [ closed ]
     branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Release Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
 
 jobs:
   build:
@@ -23,15 +35,15 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Checkout main
+      - name: Checkout develop
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: develop
           fetch-depth: 0
       - name: Setup Git context
         run: |
-            git config --local user.name "Prasheel Bot"
-            git config --local user.email "prasheelsoni11+bot@gmail.com"
+          git config --local user.name "Prasheel Bot"
+          git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Bump version
         id: "version"
         run: |
@@ -39,11 +51,8 @@ jobs:
           echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
-          git checkout -b "release/v${{steps.version.outputs.version}}"
-          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
-          echo ${{steps.version.outputs.version}}
-      - name: "Push changes to origin"
-        run: git push origin +release/v${{steps.version.outputs.version}}:release/v${{steps.version.outputs.version}}
+          git checkout -b release/v${{ steps.version.outputs.version }}
+          git push origin release/v${{ steps.version.outputs.version }}
 
   merge-release-to-master:
     runs-on: ubuntu-latest
@@ -54,16 +63,15 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - name: "Merge release"
+      - name: Merge release
         run: |
-            git fetch
-            git checkout main
-            git pull origin main
-            git merge --no-ff release/v${{needs.version-bump-and-release.outputs.version}}
-            git push origin master
-            git push origin :release/v${{needs.version-bump-and-release.outputs.version}}
-            git tag -a v${{needs.version-bump-and-release.outputs.version}} -m v${{needs.version-bump-and-release.outputs.version}}
-            git push origin v${{needs.version-bump-and-release.outputs.version}}
+          git fetch
+          git checkout main
+          git pull origin main
+          git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
+          git push origin main
+          git push origin :release/v${{ needs.version-bump-and-release.outputs.version }}
+          git tag -a v${{ needs.version-bump-and-release.outputs.version }} -m v${{ needs.version-bump-and-release.outputs.version }}
 
   back-merge-master-to-develop:
     runs-on: ubuntu-latest
