@@ -46,7 +46,7 @@ jobs:
       - name: Bump version
         id: "version"
         run: |
-          npm version major
+          npm version patch
           echo "version=$(npm run --silent get-version)" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
