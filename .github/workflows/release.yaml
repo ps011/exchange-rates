@@ -2,7 +2,7 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [ closed, labeled ]
+    types: [ closed ]
     branches: [ develop ]
   workflow_dispatch:
     inputs:
@@ -15,7 +15,6 @@ on:
           - major
           - minor
           - patch
-
 
 jobs:
   build:
@@ -96,5 +95,8 @@ jobs:
           git config --local user.email "prasheelsoni11+bot@gmail.com"
       - name: Back-merge master to develop
         run: |
-          git merge main -m "Back-merge master changes to develop"
+          git fetch
+          git checkout --track origin/main
+          git checkout develop
+          git merge origin/main -m "Back-merge master changes to develop"
           git push origin develop -f
