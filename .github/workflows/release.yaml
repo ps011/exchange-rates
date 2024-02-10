@@ -36,20 +36,23 @@ jobs:
         id: "version"
         run: |
           npm version major
-          echo "{version}={$(npm run --silent get-version)}"
+          echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
       - name: Create release branch based on version
         run: |
           git checkout -b "release-v$(npm run --silent get-version)"
           git merge ${{ github.event.pull_request.head.sha }} -m "Merge pull request #${{ github.event.pull_request.number }}"
+          echo ${{steps.version.outputs.version}}
 
   merge-release-to-master:
     runs-on: ubuntu-latest
     needs: version-bump-and-release
     steps:
+      - name: Print branch name
+        run: echo ${{ steps.version.outputs.version }}
       - name: Checkout release branch
         uses: actions/checkout@v3
         with:
-          ref: release-v$(npm run --silent get-version)
+          ref: release-v$(echo npm run --silent get-version)
           fetch-depth: 1
       - name: Merge release branch to master
         run: |
