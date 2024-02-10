@@ -77,7 +77,7 @@ jobs:
           git checkout --track origin/release/v${{ needs.version-bump-and-release.outputs.version }}
           git checkout main
           git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
-          git push origin main
+          git push origin main -f
           git push origin :release/v${{ needs.version-bump-and-release.outputs.version }}
           git tag -a v${{ needs.version-bump-and-release.outputs.version }} -m v${{ needs.version-bump-and-release.outputs.version }}
 
@@ -97,3 +97,4 @@ jobs:
       - name: Back-merge master to develop
         run: |
           git merge main -m "Back-merge master changes to develop"
+          git push origin develop -f
