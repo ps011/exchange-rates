@@ -69,6 +69,7 @@ jobs:
           git fetch
           git checkout main
           git pull origin main
+          git fetch
           git checkout --track origin/release/${{ needs.version-bump-and-release.outputs.version }}
           git checkout main
           git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
