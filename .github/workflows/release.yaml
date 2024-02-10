@@ -69,7 +69,7 @@ jobs:
           git fetch
           git checkout main
           git pull origin main
-          git merge --no-ff release/v${{ needs.version-bump-and-release.outputs.version }}
+          git merge release/v${{ needs.version-bump-and-release.outputs.version }}
           git push origin main
           git push origin :release/v${{ needs.version-bump-and-release.outputs.version }}
           git tag -a v${{ needs.version-bump-and-release.outputs.version }} -m v${{ needs.version-bump-and-release.outputs.version }}
