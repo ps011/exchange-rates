@@ -2,7 +2,7 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [ closed ]
+    types: [ closed, labeled ]
     branches: [ develop ]
   workflow_dispatch:
     inputs:
@@ -49,6 +49,7 @@ jobs:
         run: |
           npm version major
           echo "{version}={$(npm run --silent get-version)}" >> $GITHUB_OUTPUT
+          echo "### {{ steps.version.outputs.version }} :rocket: $(npm run --silent get-version)" >> $GITHUB_STEP_SUMMARY
       - name: Create release branch based on version
         run: |
           git checkout -b release/v${{ steps.version.outputs.version }}
