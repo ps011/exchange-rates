@@ -2,9 +2,8 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [opened, synchronize, labeled]
-#    types: [closed]
-#    branches: [ develop ]
+    types: [closed]
+    branches: [ develop ]
 
 
 jobs:
