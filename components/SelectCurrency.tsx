@@ -23,7 +23,7 @@ export function SelectCurrency({onChange, currencyList, currency}: SelectCurrenc
         <li className="mx-2 my-4" key={option.code} role="listitem">
             <span className="flex items-center">
                 <img src={option.flag} className="mr-2" alt="flag"/>
-                <p className="my-0 font-josefin">{option.name}</p>
+                <p className="my-0 font-josefin text-left">{option.name}</p>
             </span>
         </li>
     )
