@@ -1,7 +1,7 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {JWT} from "google-auth-library";
 import {fetchExchangeRates, getConvertedValue, getCurrencyFromValue, Rate} from "../../lib/exchange-rates-api";
-import {CurrencyCodes} from "../../constants";
+import {CurrencyCodes} from "../../lib/constants";
 
 interface NotificationData {
     source: CurrencyCodes;

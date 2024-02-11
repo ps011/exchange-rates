@@ -21,11 +21,10 @@ export class ExchangeRatesFirebase {
         this.app = this.initializeFirebase();
     }
 
-    get firebaseApp(): FirebaseApp {
-        return this.app;
-    }
-
     get analytics(): Analytics | null {
+        if (process.env.NODE_ENV !== "production") {
+            return null;
+        }
         if (!this.app) {
             this.app = this.initializeFirebase();
         }
@@ -54,31 +53,33 @@ export class ExchangeRatesFirebase {
         subscribedAt: string
     }): Promise<boolean> {
         let token = null;
-        return getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY})
-            .then((t) => {
-                token = t;
-                set(ref(this.database, 'notifications/' + token), {
+        let permission = Notification.permission;
+        try {
+            if (permission !== "granted") {
+                permission = await Notification.requestPermission();
+            }
+            if (permission === "granted") {
+                token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
+                await set(ref(this.database, 'notifications/' + token), {
                     source,
                     destination,
                     timezoneOffset,
                     subscribedAt
                 });
-                return Promise.resolve(true);
-            })
-            .catch(async () => {
-                const permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
-                    return Promise.resolve(true);
-                } else {
-                    return Promise.resolve(false);
-                }
-            });
+                return true;
+            } else {
+                return false;
+            }
+        } catch (e) {
+                return false;
+        }
     }
 
-    public logFirebaseEvent(eventName: string, eventParams: Record<string, string>): void {
-        if (this.analytics) {
+    public logFirebaseEvent(eventName: string, eventParams?: Record<string, string>): void {
+        if (process.env.NODE_ENV === "production" && this.analytics) {
             logEvent(this.analytics, eventName, eventParams);
+        } else {
+            console.log("Firebase event logging skipped: ", eventName, eventParams);
         }
     }
 
