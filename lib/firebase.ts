@@ -53,17 +53,11 @@ export class ExchangeRatesFirebase {
         subscribedAt: string
     }): Promise<boolean> {
         let token = null;
+        let permission = Notification.permission;
         try {
-            token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
-            await set(ref(this.database, 'notifications/' + token), {
-                source,
-                destination,
-                timezoneOffset,
-                subscribedAt
-            });
-            return true;
-        } catch (e) {
-            const permission = await Notification.requestPermission();
+            if (permission !== "granted") {
+                permission = await Notification.requestPermission();
+            }
             if (permission === "granted") {
                 token = await getToken(this.messaging, {vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY});
                 await set(ref(this.database, 'notifications/' + token), {
@@ -76,6 +70,8 @@ export class ExchangeRatesFirebase {
             } else {
                 return false;
             }
+        } catch (e) {
+                return false;
         }
     }
 
