@@ -89,8 +89,6 @@ export class ExchangeRatesFirebase {
             } else {
                 return getApps()[0];
             }
-        } else {
-            console.warn("Firebase not initialized. Window is not defined");
         }
     }
 }

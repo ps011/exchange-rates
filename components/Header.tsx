@@ -1,4 +1,4 @@
-import {AppBar, IconButton, Toolbar, Typography} from "@mui/material";
+import {AppBar, IconButton, Toolbar} from "@mui/material";
 import Image from "next/image";
 import {GitHub} from "@mui/icons-material";
 import {getAnalytics, logEvent} from "@firebase/analytics";
@@ -29,9 +29,9 @@ export default function Header() {
                     <Image src={'/assets/icons/icon-512.png'} alt="logo" width={40} height={40}/>
                 </IconButton>
 
-                <Typography variant="h6" component="div" className="flex-1 font-josefin">
+                <h2 className="flex-1">
                     Exchange Rates
-                </Typography>
+                </h2>
                 <a href="https://github.com/ps011/exchange-rates" target="_blank" rel="noreferrer noopener"
                      onClick={() => {
                           logLinkClickEvent("github")
