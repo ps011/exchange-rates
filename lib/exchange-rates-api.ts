@@ -1,4 +1,4 @@
-import {CURRENCIES, Currency, CurrencyCodes} from "../constants";
+import {CURRENCIES, Currency, CurrencyCodes} from "./constants";
 
 export interface ExchangeRatesResponse {
     valid: boolean;

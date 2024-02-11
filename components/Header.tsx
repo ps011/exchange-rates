@@ -1,7 +1,6 @@
 import {AppBar, IconButton, Toolbar} from "@mui/material";
 import Image from "next/image";
 import {GitHub} from "@mui/icons-material";
-import {getAnalytics, logEvent} from "@firebase/analytics";
 import {Events} from "../pages";
 import {useMemo} from "react";
 import {ExchangeRatesFirebase} from "../lib/firebase";
@@ -11,7 +10,7 @@ export default function Header() {
         return new ExchangeRatesFirebase();
     }, []);
     const logLinkClickEvent = (name: string) => {
-        logEvent(getAnalytics(firebaseApp.firebaseApp), Events.HEADER_LINK_CLICKED, {name})
+        firebaseApp.logFirebaseEvent(Events.HEADER_LINK_CLICKED, {name})
     }
     return (
         <AppBar position="sticky" classes={{colorPrimary: "bg-blue-950"}}>
