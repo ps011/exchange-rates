@@ -1,4 +1,4 @@
-import {CURRENCIES, Currency, CurrencyCodes} from '../constants';
+import {CURRENCIES, Currency, CurrencyCodes} from '../lib/constants';
 import {useState, useEffect, useMemo} from 'react';
 import {useRouter} from 'next/router';
 import {SelectCurrency} from "../components/SelectCurrency";

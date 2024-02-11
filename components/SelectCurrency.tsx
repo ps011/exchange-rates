@@ -1,5 +1,5 @@
 import {Autocomplete, InputAdornment, TextField} from "@mui/material";
-import {Currency} from "../constants";
+import {Currency} from "../lib/constants";
 
 interface SelectCurrencyProps {
     onChange: (e: Currency) => void;
