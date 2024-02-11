@@ -7,7 +7,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        josefin: ["Josefin Sans", "sans-serif"],
+        josefin: ['var(--font-josefin)'],
+        mono: ['var(--font-roboto-mono)']
       },
     },
   },

@@ -1,4 +1,4 @@
-import {CURRENCIES, CurrencyCodes} from '../constants';
+import {CURRENCIES, Currency, CurrencyCodes} from '../constants';
 import {useState, useEffect, useMemo} from 'react';
 import {useRouter} from 'next/router';
 import {SelectCurrency} from "../components/SelectCurrency";
@@ -9,7 +9,6 @@ import {ExchangeRatesFirebase} from "../lib/firebase";
 import {logEvent} from "@firebase/analytics";
 import {onMessage} from "@firebase/messaging";
 import {
-    Currency,
     fetchExchangeRates, getConvertedValue,
     getCurrencyFromValue,
     getCurrencyList,
@@ -50,14 +49,8 @@ export default function Home({exchangeRates, lastUpdated}) {
         return new ExchangeRatesFirebase();
     }, []);
 
-    const [sourceCurrency, setSourceCurrency] = useState<Currency>({
-        label: CURRENCIES[CurrencyCodes.EUR],
-        value: CurrencyCodes.EUR
-    });
-    const [destinationCurrency, setDestinationCurrency] = useState<Currency>({
-        label: CURRENCIES[CurrencyCodes.INR],
-        value: CurrencyCodes.INR
-    });
+    const [sourceCurrency, setSourceCurrency] = useState<Currency>(CURRENCIES[CurrencyCodes.EUR]);
+    const [destinationCurrency, setDestinationCurrency] = useState<Currency>(CURRENCIES[CurrencyCodes.INR]);
     const [sourceValue, setSourceValue] = useState(1);
     const [destinationValue, setDestinationValue] = useState(0);
     const [currencyList, setCurrencyList] = useState([]);
@@ -95,16 +88,16 @@ export default function Home({exchangeRates, lastUpdated}) {
     }
 
     const toggleCurrencies = () => {
-        localStorage.setItem(SRC_KEY, destinationCurrency.value);
-        localStorage.setItem(DEST_KEY, sourceCurrency.value);
+        localStorage.setItem(SRC_KEY, destinationCurrency.code);
+        localStorage.setItem(DEST_KEY, sourceCurrency.code);
         const src = sourceCurrency;
         setSourceCurrency(destinationCurrency);
         setDestinationCurrency(src);
 
         if (IS_CLIENT && firebaseApp) {
             logEvent(firebaseApp.analytics, Events.SWAP_CURRENCIES, {
-                sourceCurrency: sourceCurrency.value,
-                destinationCurrency: destinationCurrency.value,
+                sourceCurrency: sourceCurrency.code,
+                destinationCurrency: destinationCurrency.code,
             });
         }
     }
@@ -114,10 +107,10 @@ export default function Home({exchangeRates, lastUpdated}) {
             <SelectCurrency
                 onChange={(e) => {
                     setSourceCurrency(e);
-                    localStorage.setItem(SRC_KEY, e.value);
+                    localStorage.setItem(SRC_KEY, e.code);
                     firebaseApp.logFirebaseEvent(Events.CHANGE_SOURCE_CURRENCY, {
-                        oldValue: sourceCurrency.value,
-                        newValue: e.value,
+                        oldValue: sourceCurrency.code,
+                        newValue: e.code,
                     });
                 }}
                 currencyList={currencyList}
@@ -131,10 +124,10 @@ export default function Home({exchangeRates, lastUpdated}) {
             <SelectCurrency
                 onChange={(e) => {
                     setDestinationCurrency(e);
-                    localStorage.setItem(DEST_KEY, e.value);
+                    localStorage.setItem(DEST_KEY, e.code);
                     firebaseApp.logFirebaseEvent(Events.CHANGE_DESTINATION_CURRENCY, {
-                        oldValue: destinationCurrency.value,
-                        newValue: e.value,
+                        oldValue: destinationCurrency.code,
+                        newValue: e.code,
                     });
                 }}
                 currencyList={currencyList}
@@ -146,7 +139,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const sourceCurrencyInput = () => {
         return (
             <TextField
-                className="font-josefin w-full rounded dark:bg-white"
+                className="w-full rounded dark:bg-white"
                 type="number"
                 value={sourceValue}
                 onChange={(e) => calculateExchangeRate(e.target.value)}/>
@@ -156,7 +149,7 @@ export default function Home({exchangeRates, lastUpdated}) {
     const destinationCurrencyInput = () => {
         return (
             <TextField
-                className="font-josefin w-full rounded dark:bg-white"
+                className="w-full rounded dark:bg-white"
                 type="number"
                 value={destinationValue}
                 disabled
@@ -166,13 +159,13 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     const subscribeToNotifications = () => {
         firebaseApp.subscribeToNotifications({
-            source: sourceCurrency.value,
-            destination: destinationCurrency.value,
+            source: sourceCurrency.code,
+            destination: destinationCurrency.code,
             timezoneOffset: new Date().getTimezoneOffset(),
             subscribedAt: new Date().toISOString(),
         }).then((isSet) => {
             if (isSet) {
-                setSnackbarMessage(`Subscribed to notifications for ${sourceCurrency.value} → ${destinationCurrency.value}`);
+                setSnackbarMessage(`Subscribed to notifications for ${sourceCurrency.code} → ${destinationCurrency.code}`);
                 setShowSnackbar(true);
             } else {
                 setSnackbarMessage("Please grant permission to receive notifications");
@@ -183,10 +176,10 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     return (
         <div
-            className="flex items-center justify-center w-screen text-center h-[calc(100%-244px)] md:h-[calc(100%-212px)]">
+            className="flex items-center justify-center w-screen text-center h-[calc(100vh-252px)] md:h-[calc(100vh-220px)]">
             {
                 destinationValue &&
-                <title>{sourceCurrency.value} {sourceValue} → {destinationCurrency.value} {destinationValue}</title>
+                <title>{sourceCurrency.code} {sourceValue} → {destinationCurrency.code} {destinationValue}</title>
             }
             <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
@@ -200,7 +193,7 @@ export default function Home({exchangeRates, lastUpdated}) {
                     </Button>
                 </div>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                <p className="mt-4 uppercase"><small className="text-neutral-500">Last Updated</small>
+                <p className="mt-4 uppercase" suppressHydrationWarning><small className="text-neutral-500" >Last Updated</small>
                     <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "short"})}</p>
             </div>
             <Snackbar
