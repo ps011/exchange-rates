@@ -1,15 +1,10 @@
-import {CURRENCIES, CurrencyCodes} from "../constants";
+import {CURRENCIES, Currency, CurrencyCodes} from "../constants";
 
 export interface ExchangeRatesResponse {
     valid: boolean;
     updated: number;
     base: string;
     rates: Rate | null;
-}
-
-export interface Currency {
-    label: string;
-    value: CurrencyCodes;
 }
 
 export type Rate = { [key in CurrencyCodes]: number };
@@ -36,17 +31,17 @@ export async function fetchExchangeRates(): Promise<{
 
 export const getConvertedValue = (sourceCurrency: Currency, destinationCurrency: Currency, exchangeRates: Rate, value: number): number | null => {
     if (sourceCurrency && destinationCurrency) {
-        return (parseFloat((value * (exchangeRates[destinationCurrency.value] / exchangeRates[sourceCurrency.value])).toFixed(2)));
+        return (parseFloat((value * (exchangeRates[destinationCurrency.code] / exchangeRates[sourceCurrency.code])).toFixed(2)));
     }
     return null;
 }
 
 export const getCurrencyList = (): Currency[] => {
     return Object.keys(CURRENCIES).map((key: CurrencyCodes) => {
-        return {label: CURRENCIES[key], value: key};
+        return CURRENCIES[key];
     });
 };
 
 export const getCurrencyFromValue = (value: CurrencyCodes): Currency => {
-    return {label: CURRENCIES[value], value: value};
+    return CURRENCIES[value];
 };
