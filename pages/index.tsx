@@ -139,6 +139,7 @@ export default function Home({exchangeRates, lastUpdated}) {
         return (
             <TextField
                 className="w-full rounded dark:bg-white"
+                aria-label="Value"
                 type="number"
                 value={sourceValue}
                 onChange={(e) => calculateExchangeRate(e.target.value)}/>
@@ -149,6 +150,7 @@ export default function Home({exchangeRates, lastUpdated}) {
         return (
             <TextField
                 className="w-full rounded dark:bg-white"
+                aria-label="Converted value"
                 type="number"
                 value={destinationValue}
                 disabled
@@ -184,15 +186,15 @@ export default function Home({exchangeRates, lastUpdated}) {
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <div className="flex justify-center">
                     <Button classes={{root: "mr-2 dark:text-white"}} variant="outlined" color="primary"
-                            size="large" onClick={toggleCurrencies}>
+                            size="large" onClick={toggleCurrencies} aria-label="swap currencies">
                         <SwapVert/>
                     </Button>
-                    <Button color="primary" onClick={subscribeToNotifications}>
+                    <Button color="primary" onClick={subscribeToNotifications} aria-label="subscribe to notifications">
                         <NotificationAdd/>
                     </Button>
                 </div>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                <p className="mt-4 uppercase" suppressHydrationWarning><small className="text-neutral-500" >Last Updated</small>
+                <p className="mt-4 uppercase" suppressHydrationWarning><small className="text-neutral-300" >Last Updated</small>
                     <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "short"})}</p>
             </div>
             <Snackbar
