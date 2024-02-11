@@ -6,7 +6,6 @@ import {Button, Snackbar, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
 import {Close, NotificationAdd, SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
-import {logEvent} from "@firebase/analytics";
 import {onMessage} from "@firebase/messaging";
 import {
     fetchExchangeRates, getConvertedValue,
@@ -95,7 +94,7 @@ export default function Home({exchangeRates, lastUpdated}) {
         setDestinationCurrency(src);
 
         if (IS_CLIENT && firebaseApp) {
-            logEvent(firebaseApp.analytics, Events.SWAP_CURRENCIES, {
+            firebaseApp.logFirebaseEvent(Events.SWAP_CURRENCIES, {
                 sourceCurrency: sourceCurrency.code,
                 destinationCurrency: destinationCurrency.code,
             });

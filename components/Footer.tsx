@@ -1,5 +1,4 @@
 import {GitHub, Instagram, LinkedIn, OpenInNew, X} from "@mui/icons-material";
-import {getAnalytics, logEvent} from "@firebase/analytics";
 import {useMemo} from "react";
 import {ExchangeRatesFirebase} from "../lib/firebase";
 import {Events} from "../pages";
@@ -10,7 +9,7 @@ export default function Footer() {
     }, []);
 
     const logLinkClickEvent = (name: string) => {
-        logEvent(getAnalytics(firebaseApp.firebaseApp), Events.FOOTER_LINK_CLICKED, {name})
+        firebaseApp.logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {name});
     }
 
     return (
@@ -20,7 +19,10 @@ export default function Footer() {
                 <div className="text-center flex flex-col mb-8 sm:flex-1 sm:text-left">
                     <p className="my-0 text-neutral-500">Developed and Maintained by</p>
                     <a href="https://ps011.github.io" target="_blank" className="text-black dark:text-white no-underline">
-                        <h3 className="my-2">Prasheel Soni
+                        <h3 className="my-2" onClick={() => {
+                            logLinkClickEvent("portfolio")
+                        }}>
+                            Prasheel Soni
                         <OpenInNew className="align-middle ml-1" fontSize="small"/>
                         </h3>
                     </a>
