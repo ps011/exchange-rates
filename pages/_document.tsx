@@ -3,7 +3,7 @@ import Document, {Html, Head, Main, NextScript} from 'next/document'
 class ExchangeRatesDocument extends Document {
     render() {
         return (
-            <Html className="h-full">
+            <Html className="h-full" lang="en">
                 <Head>
                     <link rel="manifest" href="/manifest.json"/>
                     <meta name="theme-color" content="#172554"/>

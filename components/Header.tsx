@@ -31,7 +31,7 @@ export default function Header() {
                 <h2 className="flex-1">
                     Exchange Rates
                 </h2>
-                <a href="https://github.com/ps011/exchange-rates" target="_blank" rel="noreferrer noopener"
+                <a href="https://github.com/ps011/exchange-rates" target="_blank" rel="noreferrer noopener" aria-label="GitHub"
                      onClick={() => {
                           logLinkClickEvent("github")
                      }}
