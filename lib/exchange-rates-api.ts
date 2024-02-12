@@ -13,6 +13,7 @@ export async function fetchExchangeRates(): Promise<{
     rates: Rate | null,
     lastUpdated: number | null
 }> {
+
     try {
         const res: Response = await fetch(`${process.env.CURRENCY_API_URL}/rates?key=${process.env.CURRENCY_API_KEY}`)
         const data: ExchangeRatesResponse = await res.json();

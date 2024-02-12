@@ -26,9 +26,13 @@ export enum Events {
 export async function getStaticProps(): Promise<{
     props: { exchangeRates: Rate | null, lastUpdated: number | null },
     revalidate: number
-}> {
+} | {notFound: boolean}> {
 
     const data = await fetchExchangeRates();
+
+    if (!data.rates) {
+        return {notFound: true};
+    }
     return {
         props: {
             exchangeRates: data.rates || null,
@@ -194,7 +198,8 @@ export default function Home({exchangeRates, lastUpdated}) {
                     </Button>
                 </div>
                 <CurrencyInputGroup select={destinationCurrencySelect()} input={destinationCurrencyInput()}/>
-                <p className="mt-4 uppercase" suppressHydrationWarning><small className="text-neutral-300" >Last Updated</small>
+                <p className="mt-4 uppercase" suppressHydrationWarning><small className="text-neutral-300">Last
+                    Updated</small>
                     <br/> {new Date(lastUpdated * 1000).toLocaleString('en-GB', {hour12: true, timeStyle: "short"})}</p>
             </div>
             <Snackbar
