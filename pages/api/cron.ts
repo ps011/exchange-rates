@@ -1,6 +1,6 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {JWT} from "google-auth-library";
-import {fetchExchangeRates, getConvertedValue, getCurrencyFromValue, Rate} from "../../lib/exchange-rates-api";
+import {fetchExchangeRates, getConvertedValue, getCurrencyDetailsByCode, Rate} from "../../lib/exchange-rates-api";
 import {CurrencyCodes} from "../../lib/constants";
 
 interface NotificationData {
@@ -59,7 +59,7 @@ async function sendNotification(key: string, value: NotificationData, rates: Rat
                         token: key,
                         data: {
                             body: 'Currency Exchange Rate Update',
-                            title: `${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyFromValue(value.source), getCurrencyFromValue(value.destination), rates, 1)}`,
+                            title: `${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyDetailsByCode(value.source), getCurrencyDetailsByCode(value.destination), rates, 1)}`,
                         },
                     }
                 }

@@ -1,18 +1,18 @@
 import {CURRENCIES, Currency, CurrencyCodes} from '../lib/constants';
 import {useState, useEffect, useMemo} from 'react';
-import {useRouter} from 'next/router';
 import {SelectCurrency} from "../components/SelectCurrency";
 import {Button, Snackbar, TextField} from '@mui/material';
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
-import {Close, NotificationAdd, SwapVert} from "@mui/icons-material";
+import {Close, FileCopy, NotificationAdd, SwapVert} from "@mui/icons-material";
 import {ExchangeRatesFirebase} from "../lib/firebase";
 import {onMessage} from "@firebase/messaging";
 import {
+    GetStaticProps,
     fetchExchangeRates, getConvertedValue,
-    getCurrencyFromValue,
     getCurrencyList,
-    Rate
+    SRC_KEY, DEST_KEY, getDefaultCurrency
 } from "../lib/exchange-rates-api";
+import { useSearchParams } from 'next/navigation';
 
 
 export enum Events {
@@ -24,7 +24,7 @@ export enum Events {
 }
 
 export async function getStaticProps(): Promise<{
-    props: { exchangeRates: Rate | null, lastUpdated: number | null },
+    props: GetStaticProps,
     revalidate: number
 } | { notFound: boolean }> {
 
@@ -43,11 +43,12 @@ export async function getStaticProps(): Promise<{
 }
 
 export default function Home({exchangeRates, lastUpdated}) {
-    const SRC_KEY = 'src';
-    const DEST_KEY = 'dest';
     const IS_CLIENT = typeof window !== "undefined";
 
-    const {query} = useRouter();
+    const query = useSearchParams();
+    const querySrc = query.get("src");
+    const queryDest = query.get("dest");
+
     const firebaseApp = useMemo(() => {
         return new ExchangeRatesFirebase();
     }, []);
@@ -63,8 +64,8 @@ export default function Home({exchangeRates, lastUpdated}) {
     useEffect(() => {
         setCurrencyList(getCurrencyList());
 
-        setSourceCurrency(getCurrencyFromValue((query.src as CurrencyCodes) || localStorage.getItem(SRC_KEY) as CurrencyCodes || CurrencyCodes.EUR));
-        setDestinationCurrency(getCurrencyFromValue((query.dest as CurrencyCodes) || localStorage.getItem(DEST_KEY) as CurrencyCodes || CurrencyCodes.INR));
+        setSourceCurrency(getDefaultCurrency(querySrc, SRC_KEY));
+        setDestinationCurrency(getDefaultCurrency(queryDest, DEST_KEY));
 
         onMessage(firebaseApp.messaging, (payload) => {
             new Notification(payload.data.title, {
@@ -73,7 +74,7 @@ export default function Home({exchangeRates, lastUpdated}) {
                 badge: '/favicon.ico',
             })
         });
-    }, []);
+    }, [querySrc, queryDest]);
 
     useEffect(() => {
         calculateExchangeRate(sourceValue);
@@ -183,10 +184,26 @@ export default function Home({exchangeRates, lastUpdated}) {
         })
     }
 
+    const copyToClipboard = () => {
+        const hasSrcOrDest = window.location.search.includes("src") || window.location.search.includes("dest");
+        const queryParam = hasSrcOrDest ? "" : `?src=${sourceCurrency.code}&dest=${destinationCurrency.code}`;
+        navigator.clipboard.writeText(`
+        ${sourceCurrency.code} ${sourceValue} → ${destinationCurrency.code} ${destinationValue}
+        Link: ${window.location.href}${queryParam}
+        `)
+            .then(() => {
+                setSnackbarMessage("Copied to clipboard");
+                setShowSnackbar(true);
+            })
+            .catch(() => {
+                setSnackbarMessage("Failed to copy to clipboard");
+                setShowSnackbar(true);
+            });
+    }
+
     return (
         <div
             className="flex items-center justify-center w-screen text-center h-[calc(100vh-252px)] overflow-scroll md:h-[calc(100vh-220px)]">
-            {    console.log(sourceCurrency.code, destinationCurrency.code)}
             {
                 destinationValue &&
                 <title>{sourceCurrency.code} {sourceValue} → {destinationCurrency.code} {destinationValue}</title>
@@ -194,6 +211,9 @@ export default function Home({exchangeRates, lastUpdated}) {
             <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
                 <CurrencyInputGroup select={sourceCurrencySelect()} input={sourceCurrencyInput()}/>
                 <div className="flex justify-center">
+                    <Button color="primary" onClick={copyToClipboard} aria-label="copy to clipcoard">
+                        <FileCopy/>
+                    </Button>
                     <Button classes={{root: "mr-2 dark:text-white"}} variant="outlined" color="primary"
                             size="large" onClick={toggleCurrencies} aria-label="swap currencies">
                         <SwapVert/>
