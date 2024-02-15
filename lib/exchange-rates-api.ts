@@ -61,8 +61,8 @@ export const getCurrencyDetailsByCode = (code: CurrencyCodes): Currency => {
     return CURRENCIES[code];
 };
 
-export const getDefaultCurrency = (query, key: typeof SRC_KEY | typeof DEST_KEY): Currency => {
-    const code = (query as CurrencyCodes) || localStorage.getItem(SRC_KEY) as CurrencyCodes
+export const getDefaultCurrency = (query: string, key: typeof SRC_KEY | typeof DEST_KEY): Currency => {
+    const code = (query as CurrencyCodes) || localStorage.getItem(key) as CurrencyCodes
     if (key === SRC_KEY) {
         return code in CurrencyCodes ? CURRENCIES[code] : CURRENCIES.EUR;
     }
