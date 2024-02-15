@@ -1,5 +1,6 @@
-import {Autocomplete, InputAdornment, TextField} from "@mui/material";
-import {Currency} from "../lib/constants";
+import {Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Currency, CurrencyCodes} from "../lib/constants";
+import Image from "next/image";
 
 interface SelectCurrencyProps {
     onChange: (e: Currency) => void;
@@ -30,6 +31,18 @@ export function SelectCurrency({onChange, currencyList, currency}: SelectCurrenc
 
 
     return (
+        // <FormControl variant="outlined" className="bg-white mx-auto w-full text-left rounded">
+        //     {/*<InputLabel id="demo-simple-select-standard-label">Age</InputLabel>*/}
+        //     <Select
+        //         value={currency.code}
+        //         label="Currency"
+        //         onChange={(e) => onChange(e.target.value as CurrencyCodes)}
+        //     >
+        //         {currencyList.map((c: Currency) => (
+        //             <MenuItem key={c.code} value={c.code}><Image src={c.flag} alt="flag" width="20" height="20"></Image>{c.name}</MenuItem>
+        //         ))}
+        //     </Select>
+        // </FormControl>
         <Autocomplete
             classes={{inputRoot: "dark:bg-white"}}
             options={currencyList}

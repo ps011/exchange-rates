@@ -26,7 +26,7 @@ export enum Events {
 export async function getStaticProps(): Promise<{
     props: { exchangeRates: Rate | null, lastUpdated: number | null },
     revalidate: number
-} | {notFound: boolean}> {
+} | { notFound: boolean }> {
 
     const data = await fetchExchangeRates();
 
@@ -35,8 +35,8 @@ export async function getStaticProps(): Promise<{
     }
     return {
         props: {
-            exchangeRates: data.rates || null,
-            lastUpdated: data.lastUpdated || null,
+            exchangeRates: data.rates,
+            lastUpdated: data.lastUpdated,
         },
         revalidate: 3600,
     }
@@ -80,9 +80,13 @@ export default function Home({exchangeRates, lastUpdated}) {
     }, [sourceCurrency, destinationCurrency])
 
     const calculateExchangeRate = (e) => {
+        setSourceValue(e)
+        if (!e) {
+            setDestinationValue(0);
+            return;
+        }
         const value = getConvertedValue(sourceCurrency, destinationCurrency, exchangeRates, e);
         if (value) {
-            setSourceValue(e)
             setDestinationValue(value);
         } else {
             setSnackbarMessage("Failed to calculate exchange rates");
@@ -181,7 +185,8 @@ export default function Home({exchangeRates, lastUpdated}) {
 
     return (
         <div
-            className="flex items-center justify-center w-screen text-center h-[calc(100vh-252px)] md:h-[calc(100vh-220px)]">
+            className="flex items-center justify-center w-screen text-center h-[calc(100vh-252px)] overflow-scroll md:h-[calc(100vh-220px)]">
+            {    console.log(sourceCurrency.code, destinationCurrency.code)}
             {
                 destinationValue &&
                 <title>{sourceCurrency.code} {sourceValue} → {destinationCurrency.code} {destinationValue}</title>

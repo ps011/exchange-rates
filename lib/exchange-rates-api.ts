@@ -1,4 +1,5 @@
 import {CURRENCIES, Currency, CurrencyCodes} from "./constants";
+import {MOCK_RESPONSE} from "../scripts/mock-response";
 
 export interface ExchangeRatesResponse {
     valid: boolean;
@@ -13,7 +14,9 @@ export async function fetchExchangeRates(): Promise<{
     rates: Rate | null,
     lastUpdated: number | null
 }> {
-
+    if (process.env.NODE_ENV !== "production") {
+        return MOCK_RESPONSE;
+    }
     try {
         const res: Response = await fetch(`${process.env.CURRENCY_API_URL}/rates?key=${process.env.CURRENCY_API_KEY}`)
         const data: ExchangeRatesResponse = await res.json();

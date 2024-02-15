@@ -1,22 +1,5 @@
-.score {
-    background: rgba(255,255,255,0.2);
-    padding: 0 3rem;
-    line-height: 1;
-    border-radius: 1rem;
-}
-
-.game {
-    width: 600px;
-    height: 400px;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 auto;
-}
-
 .hole {
     flex: 1 0 33.33%;
-    overflow: hidden;
-    position: relative;
 }
 
 .hole:after {
