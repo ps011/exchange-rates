@@ -1,4 +1,4 @@
-export type RichCurrency = {
+export type CurrencyDetail = {
     [key in CurrencyCodes]: Currency
 }
 export interface Currency {
@@ -149,7 +149,7 @@ export enum CurrencyCodes {
     ZAR = "ZAR",
     ZMW = "ZMW"
 }
-export const CURRENCIES: RichCurrency = {
+export const CURRENCIES: CurrencyDetail = {
     [CurrencyCodes.AED]: {
         "code": CurrencyCodes.AED,
         "name": "UAE Dirham",

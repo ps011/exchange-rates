@@ -1,5 +1,6 @@
-import {Autocomplete, InputAdornment, TextField} from "@mui/material";
-import {Currency} from "../lib/constants";
+import {Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Currency, CurrencyCodes} from "../lib/constants";
+import Image from "next/image";
 
 interface SelectCurrencyProps {
     onChange: (e: Currency) => void;
