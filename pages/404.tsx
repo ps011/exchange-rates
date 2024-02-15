@@ -5,7 +5,6 @@ import {Button} from "@mui/material";
 export default function NotFoundPage() {
     const HOLE_COUNT = 6;
     const TOTAL_TIME = 10000;
-    // let remainingTime = 10000;
     let lastHole: Element;
     let timeUp = false;
     const [score, setScore] = useState<number>(0);
