@@ -13,7 +13,7 @@ export default function Footer() {
     }
 
     return (
-        <footer className="bg-white rounded-lg shadow dark:bg-gray-900 relative bottom-0 right-0 left-0">
+        <footer className="bg-white rounded-lg shadow dark:bg-gray-900 absolute left-0 right-0 bottom-0">
             <hr className="border-gray-200 sm:mx-auto dark:border-gray-700"/>
             <div className="mx-auto p-4 flex flex-col sm:flex-row sm:w-full">
                 <div className="text-center flex flex-col mb-8 sm:flex-1 sm:text-left">
