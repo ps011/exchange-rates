@@ -1,5 +1,5 @@
 import { CURRENCIES, Currency, CurrencyCodes } from "../lib/constants";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SelectCurrency } from "../components/SelectCurrency";
 import { Button, Snackbar, TextField } from "@mui/material";
 import CurrencyInputGroup from "../components/CurrencyInputGroup";
@@ -12,13 +12,13 @@ import {
 import { ExchangeRatesFirebase } from "../lib/firebase";
 import { onMessage } from "@firebase/messaging";
 import {
-  GetStaticProps,
+  DEST_KEY,
   fetchExchangeRates,
   getConvertedValue,
   getCurrencyList,
-  SRC_KEY,
-  DEST_KEY,
   getDefaultCurrency,
+  GetStaticProps,
+  SRC_KEY,
 } from "../lib/exchange-rates-api";
 import { useSearchParams } from "next/navigation";
 
@@ -51,7 +51,7 @@ export async function getStaticProps(): Promise<
   };
 }
 
-export default function Home({ exchangeRates, lastUpdated }) {
+export default function Home({ exchangeRates, lastUpdated }: GetStaticProps) {
   const IS_CLIENT = typeof window !== "undefined";
 
   const query = useSearchParams();
@@ -70,7 +70,7 @@ export default function Home({ exchangeRates, lastUpdated }) {
   );
   const [sourceValue, setSourceValue] = useState(1);
   const [destinationValue, setDestinationValue] = useState(0);
-  const [currencyList, setCurrencyList] = useState([]);
+  const [currencyList, setCurrencyList] = useState<Currency[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -83,6 +83,7 @@ export default function Home({ exchangeRates, lastUpdated }) {
 
   useEffect(() => {
     onMessage(firebaseApp.messaging, (payload) => {
+      if (!payload || !payload.data) return;
       new Notification(payload.data.title, {
         body: payload.data.body,
         icon: "/favicon.ico",
@@ -281,14 +282,16 @@ export default function Home({ exchangeRates, lastUpdated }) {
           select={destinationCurrencySelect()}
           input={destinationCurrencyInput()}
         />
-        <p className="mt-4 uppercase" suppressHydrationWarning>
-          <small className="text-neutral-300">Last Updated</small>
-          <br />{" "}
-          {new Date(lastUpdated * 1000).toLocaleString("en-GB", {
-            hour12: true,
-            timeStyle: "short",
-          })}
-        </p>
+        {lastUpdated && (
+          <p className="mt-4 uppercase" suppressHydrationWarning>
+            <small className="text-neutral-300">Last Updated</small>
+            <br />{" "}
+            {new Date(lastUpdated * 1000).toLocaleString("en-GB", {
+              hour12: true,
+              timeStyle: "short",
+            })}
+          </p>
+        )}
       </div>
       <Snackbar
         open={showSnackbar}

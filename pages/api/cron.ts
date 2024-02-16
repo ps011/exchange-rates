@@ -23,7 +23,7 @@ export default async function handler(
     const data = await getDataset();
     await processDataset(data);
     response.status(200).end();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     response.write(error.message);
     response.status(500);
@@ -56,26 +56,30 @@ async function processDataset(data: {
 async function sendNotification(
   key: string,
   value: NotificationData,
-  rates: Rate,
+  rates: Rate | null,
   token: string,
 ): Promise<void> {
+  if (!rates) return;
   try {
-    await fetch(process.env.NEXT_PUBLIC_FIREBASE_NOTIFICATIONS_SEND_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        message: {
-          token: key,
-          data: {
-            body: "Currency Exchange Rate Update",
-            title: `${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyDetailsByCode(value.source), getCurrencyDetailsByCode(value.destination), rates, 1)}`,
-          },
+    await fetch(
+      process.env.NEXT_PUBLIC_FIREBASE_NOTIFICATIONS_SEND_URL as unknown as URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      }),
-    });
+        body: JSON.stringify({
+          message: {
+            token: key,
+            data: {
+              body: "Currency Exchange Rate Update",
+              title: `${value.source} 1 -> ${value.destination} ${getConvertedValue(getCurrencyDetailsByCode(value.source), getCurrencyDetailsByCode(value.destination), rates, 1)}`,
+            },
+          },
+        }),
+      },
+    );
   } catch (error) {
     console.error(error);
   }
@@ -90,17 +94,17 @@ async function fetchAccessToken(): Promise<string> {
   return new Promise(function (resolve, reject) {
     const jwtClient = new JWT(
       serviceAccount.client_email,
-      null,
+      undefined,
       serviceAccount.private_key,
       SCOPES,
-      null,
+      undefined,
     );
     jwtClient.authorize(function (err, tokens) {
       if (err) {
         reject(err);
         return;
       }
-      resolve(tokens.access_token);
+      resolve(tokens!.access_token as string);
     });
   });
 }

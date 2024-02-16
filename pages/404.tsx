@@ -8,7 +8,7 @@ export default function NotFoundPage() {
   let lastHole: Element;
   let timeUp = false;
   const [score, setScore] = useState<number>(0);
-  const [holes, setHoles] = useState<NodeListOf<Element>>(null);
+  const [holes, setHoles] = useState<NodeListOf<Element> | null>(null);
   const [remainingTime, setRemainingTime] = useState(TOTAL_TIME);
 
   useEffect(() => {
@@ -19,7 +19,8 @@ export default function NotFoundPage() {
     return Math.round(Math.random() * (max - min) + min);
   }
 
-  function randomHole(holes: NodeListOf<Element>) {
+  function randomHole(holes: NodeListOf<Element> | null): Element | undefined {
+    if (!holes) return;
     const idx = Math.floor(Math.random() * holes.length);
     const hole = holes[idx];
     if (hole === lastHole) {
@@ -33,6 +34,7 @@ export default function NotFoundPage() {
   function peep(): void {
     const time = randomTime(200, 1000);
     const hole = randomHole(holes);
+    if (!hole) return;
     hole.classList.add("up");
     setTimeout(() => {
       hole.classList.remove("up");
@@ -61,7 +63,7 @@ export default function NotFoundPage() {
     setTimeout(() => (timeUp = true), TOTAL_TIME);
   }
 
-  function bonk(e): void {
+  function bonk(e: any): void {
     if (!e.isTrusted) return; // cheater!
     setScore(score + 1);
     e.target.parentNode.classList.remove("up");

@@ -6,7 +6,7 @@ import {
 } from "firebase/app";
 import { Analytics, getAnalytics, logEvent } from "@firebase/analytics";
 import { getMessaging, getToken, Messaging } from "@firebase/messaging";
-import { getDatabase, ref, set } from "firebase/database";
+import { Database, getDatabase, ref, set } from "firebase/database";
 
 export class ExchangeRatesFirebase {
   private firebaseConfig: FirebaseOptions = {
@@ -20,7 +20,7 @@ export class ExchangeRatesFirebase {
     databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
   };
 
-  private app: FirebaseApp = null;
+  private app: FirebaseApp | null = null;
 
   constructor() {
     this.app = this.initializeFirebase();
@@ -36,14 +36,14 @@ export class ExchangeRatesFirebase {
     return getAnalytics(this.app);
   }
 
-  get messaging(): Messaging | null {
+  get messaging(): Messaging {
     if (!this.app) {
       this.app = this.initializeFirebase();
     }
     return getMessaging(this.app);
   }
 
-  get database() {
+  get database(): Database {
     if (!this.app) {
       this.app = this.initializeFirebase();
     }
@@ -98,12 +98,10 @@ export class ExchangeRatesFirebase {
   }
 
   private initializeFirebase(): FirebaseApp {
-    if (typeof window !== "undefined") {
-      if (!getApps().length) {
-        return initializeApp(this.firebaseConfig);
-      } else {
-        return getApps()[0];
-      }
+    if (!getApps().length) {
+      return initializeApp(this.firebaseConfig);
+    } else {
+      return getApps()[0];
     }
   }
 }

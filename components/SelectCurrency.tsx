@@ -28,7 +28,7 @@ export function SelectCurrency({
     return option.code === value.code;
   };
 
-  const renderOption = (props, option: Currency) => (
+  const renderOption = (props: Object, option: Currency) => (
     <li className="mx-2 my-4" key={option.code} role="listitem" {...props}>
       <span className="flex items-center">
         <Image

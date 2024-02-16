@@ -9,7 +9,7 @@ export interface ExchangeRatesResponse {
 }
 
 export interface GetStaticProps {
-  exchangeRates: Rate | null;
+  exchangeRates: Rate;
   lastUpdated: number | null;
 }
 
@@ -63,9 +63,11 @@ export const getConvertedValue = (
 };
 
 export const getCurrencyList = (): Currency[] => {
-  return Object.keys(CURRENCIES).map((key: CurrencyCodes) => {
-    return CURRENCIES[key];
-  });
+  return (Object.keys(CURRENCIES) as CurrencyCodes[]).map(
+    (key: CurrencyCodes) => {
+      return CURRENCIES[key];
+    },
+  );
 };
 
 export const getCurrencyDetailsByCode = (code: CurrencyCodes): Currency => {
@@ -73,7 +75,7 @@ export const getCurrencyDetailsByCode = (code: CurrencyCodes): Currency => {
 };
 
 export const getDefaultCurrency = (
-  query: string,
+  query: string | null,
   key: typeof SRC_KEY | typeof DEST_KEY,
 ): Currency => {
   const code =
