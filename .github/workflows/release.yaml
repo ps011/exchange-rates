@@ -2,14 +2,14 @@ name: Release Exchange Rates App
 
 on:
   pull_request:
-    types: [ closed ]
-    branches: [ develop ]
+    types: [closed]
+    branches: [develop]
   workflow_dispatch:
     inputs:
       releaseType:
-        description: 'Release Type'
+        description: "Release Type"
         required: true
-        default: 'patch'
+        default: "patch"
         type: choice
         options:
           - major
