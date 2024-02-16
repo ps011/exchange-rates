@@ -1,12 +1,16 @@
 {
   "name": "exchange-rates",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "get-version": "node scripts/get-version.js"
+    "lint": "next lint",
+    "lint:prettier": "prettier --check .",
+    "lint:prettier:fix": "prettier --write .",
+    "get-version": "node scripts/get-version.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -24,7 +28,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.17",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "postcss": "^8.4.33",
+    "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   }

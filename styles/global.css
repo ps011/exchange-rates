@@ -6,10 +6,10 @@
 html,
 body,
 body > div:first-child,
-div#__next{
-    height: 100%;
+div#__next {
+  height: 100%;
 }
 
 input {
-    @apply font-josefin !important;
+  @apply font-josefin !important;
 }
