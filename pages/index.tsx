@@ -79,7 +79,9 @@ export default function Home({ exchangeRates, lastUpdated }) {
 
     setSourceCurrency(getDefaultCurrency(querySrc, SRC_KEY));
     setDestinationCurrency(getDefaultCurrency(queryDest, DEST_KEY));
+  }, [querySrc, queryDest]);
 
+  useEffect(() => {
     onMessage(firebaseApp.messaging, (payload) => {
       new Notification(payload.data.title, {
         body: payload.data.body,
@@ -87,7 +89,7 @@ export default function Home({ exchangeRates, lastUpdated }) {
         badge: "/favicon.ico",
       });
     });
-  }, [querySrc, queryDest, firebaseApp.messaging]);
+  });
 
   const calculateExchangeRate = useCallback(
     (e) => {

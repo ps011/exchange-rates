@@ -1,13 +1,5 @@
-import {
-  Autocomplete,
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
-import { Currency, CurrencyCodes } from "../lib/constants";
+import { Autocomplete, InputAdornment, TextField } from "@mui/material";
+import { Currency } from "../lib/constants";
 import Image from "next/image";
 
 interface SelectCurrencyProps {
@@ -39,7 +31,13 @@ export function SelectCurrency({
   const renderOption = (props, option: Currency) => (
     <li className="mx-2 my-4" key={option.code} role="listitem" {...props}>
       <span className="flex items-center">
-        <Image src={option.flag} className="mr-2" alt="flag" />
+        <Image
+          src={option.flag}
+          width={35}
+          height={35}
+          className="mr-3"
+          alt="flag"
+        />
         <p className="my-0 font-josefin text-left">{option.name}</p>
       </span>
     </li>
@@ -61,7 +59,7 @@ export function SelectCurrency({
           ...InputProps,
           startAdornment: (
             <InputAdornment position="start">
-              <Image src={currency.flag} alt="flag" />
+              <Image src={currency.flag} width={35} height={35} alt="flag" />
             </InputAdornment>
           ),
         };
