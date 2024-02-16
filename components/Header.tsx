@@ -33,7 +33,9 @@ export default function Header() {
           />
         </IconButton>
 
-        <h2 className="flex-1">Exchange Rates</h2>
+        <h2 className="flex-1" data-testid="app-name">
+          Exchange Rates
+        </h2>
         <a
           href="https://github.com/ps011/exchange-rates"
           target="_blank"
