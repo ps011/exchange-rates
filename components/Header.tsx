@@ -41,6 +41,7 @@ export default function Header() {
           target="_blank"
           rel="noreferrer noopener"
           aria-label="GitHub"
+          data-testid="github"
           onClick={() => {
             logLinkClickEvent("github");
           }}

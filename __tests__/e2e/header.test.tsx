@@ -12,4 +12,10 @@ describe("Page", () => {
 
     expect(heading).toEqual("Exchange Rates");
   });
+
+  it("should log event when link is clicked", () => {
+    render(<Header />);
+    const link = screen.getByTestId("github");
+    link.click();
+  });
 });
