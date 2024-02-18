@@ -1,38 +1,15 @@
-import { AppBar, IconButton, Toolbar } from "@mui/material";
-import Image from "next/image";
+import { AppBar, Toolbar } from "@mui/material";
 import { GitHub } from "@mui/icons-material";
 import { Events } from "../pages";
-import { useMemo } from "react";
-import { ExchangeRatesFirebase } from "../lib/firebase";
 
-export default function Header() {
-  const firebaseApp = useMemo(() => {
-    return new ExchangeRatesFirebase();
-  }, []);
-  const logLinkClickEvent = (name: string) => {
-    firebaseApp.logFirebaseEvent(Events.HEADER_LINK_CLICKED, { name });
-  };
+export default function Header({
+  logFirebaseEvent,
+}: {
+  logFirebaseEvent: (name: string, params: any) => void;
+}) {
   return (
     <AppBar position="sticky" classes={{ colorPrimary: "bg-blue-950" }}>
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-          onClick={() => {
-            logLinkClickEvent("logo");
-          }}
-        >
-          <Image
-            src={"/assets/icons/icon-512.png"}
-            alt="logo"
-            width={40}
-            height={40}
-          />
-        </IconButton>
-
         <h2 className="flex-1" data-testid="app-name">
           Exchange Rates
         </h2>
@@ -43,7 +20,7 @@ export default function Header() {
           aria-label="GitHub"
           data-testid="github"
           onClick={() => {
-            logLinkClickEvent("github");
+            logFirebaseEvent(Events.HEADER_LINK_CLICKED, { name: "github" });
           }}
           className="text-white"
         >

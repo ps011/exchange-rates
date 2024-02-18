@@ -4,6 +4,8 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { Josefin_Sans } from "next/font/google";
 import { AppProps } from "next/app";
+import { useMemo } from "react";
+import { ExchangeRatesFirebase } from "../lib/firebase";
 
 const josefinSans = Josefin_Sans({
   weight: "400",
@@ -13,12 +15,16 @@ const josefinSans = Josefin_Sans({
 });
 
 function ExchangeRates({ Component, pageProps }: AppProps) {
+  const firebaseApp = useMemo(() => {
+    return new ExchangeRatesFirebase();
+  }, []);
+
   return (
     <main className={`${josefinSans.variable} font-josefin`}>
       <CssBaseline />
-      <Header />
+      <Header logFirebaseEvent={firebaseApp.logFirebaseEvent} />
       <Component {...pageProps} />
-      <Footer />
+      <Footer logFirebaseEvent={firebaseApp.logFirebaseEvent} />
     </main>
   );
 }

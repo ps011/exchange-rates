@@ -1,17 +1,11 @@
 import { GitHub, Instagram, LinkedIn, OpenInNew, X } from "@mui/icons-material";
-import { useMemo } from "react";
-import { ExchangeRatesFirebase } from "../lib/firebase";
 import { Events } from "../pages";
 
-export default function Footer() {
-  const firebaseApp = useMemo(() => {
-    return new ExchangeRatesFirebase();
-  }, []);
-
-  const logLinkClickEvent = (name: string) => {
-    firebaseApp.logFirebaseEvent(Events.FOOTER_LINK_CLICKED, { name });
-  };
-
+export default function Footer({
+  logFirebaseEvent,
+}: {
+  logFirebaseEvent: (name: string, params: any) => void;
+}) {
   return (
     <footer className="bg-white rounded-lg shadow dark:bg-gray-900 absolute left-0 right-0 bottom-0">
       <hr className="border-gray-200 sm:mx-auto dark:border-gray-700" />
@@ -26,8 +20,11 @@ export default function Footer() {
           >
             <h3
               className="my-2"
+              data-testid="portfolio"
               onClick={() => {
-                logLinkClickEvent("portfolio");
+                logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {
+                  name: "portfolio",
+                });
               }}
             >
               Prasheel Soni
@@ -43,8 +40,11 @@ export default function Footer() {
             aria-label="Instagram"
           >
             <span
+              data-testid="instagram"
               onClick={() => {
-                logLinkClickEvent("instagram");
+                logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {
+                  name: "instagram",
+                });
               }}
             >
               <Instagram className="cursor-pointer" />
@@ -57,8 +57,11 @@ export default function Footer() {
             aria-label="Github"
           >
             <span
+              data-testid="github"
               onClick={() => {
-                logLinkClickEvent("github");
+                logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {
+                  name: "github",
+                });
               }}
             >
               <GitHub className="cursor-pointer" />
@@ -71,8 +74,11 @@ export default function Footer() {
             aria-label="X"
           >
             <span
+              data-testid="x"
               onClick={() => {
-                logLinkClickEvent("x");
+                logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {
+                  name: "x",
+                });
               }}
             >
               <X className="cursor-pointer" />
@@ -85,8 +91,11 @@ export default function Footer() {
             aria-label="linkedin"
           >
             <span
+              data-testid="linkedin"
               onClick={() => {
-                logLinkClickEvent("linkedin");
+                logFirebaseEvent(Events.FOOTER_LINK_CLICKED, {
+                  name: "linkedin",
+                });
               }}
             >
               <LinkedIn className="cursor-pointer" />
