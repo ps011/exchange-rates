@@ -1,12 +1,13 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { describe, it } from "@jest/globals";
+import { describe, it, jest } from "@jest/globals";
 import expect from "expect";
 import Header from "../../components/Header";
 
 describe("Page", () => {
   it("renders heading", () => {
-    render(<Header />);
+    const logFirebaseEvent = jest.fn();
+    render(<Header logFirebaseEvent={logFirebaseEvent} />);
 
     const heading = screen.getByTestId("app-name").textContent;
 
@@ -14,7 +15,8 @@ describe("Page", () => {
   });
 
   it("should log event when link is clicked", () => {
-    render(<Header />);
+    const logFirebaseEvent = jest.fn();
+    render(<Header logFirebaseEvent={logFirebaseEvent} />);
     const link = screen.getByTestId("github");
     link.click();
   });
