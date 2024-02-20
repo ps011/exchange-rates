@@ -29,7 +29,13 @@ export function SelectCurrency({
   };
 
   const renderOption = (props: Object, option: Currency) => (
-    <li className="mx-2 my-4" key={option.code} role="listitem" {...props}>
+    <li
+      className="mx-2 my-4"
+      key={option.code}
+      role="listitem"
+      data-testid={`option-${option.code}`}
+      {...props}
+    >
       <span className="flex items-center">
         <Image
           src={option.flag}
@@ -52,6 +58,7 @@ export function SelectCurrency({
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={isOptionEqualToValue}
       filterOptions={filterOptions}
+      data-testid="select-currency"
       onChange={(_e, v: Currency) => onChange(v)}
       renderInput={(params) => {
         const { InputProps } = params;
