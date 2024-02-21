@@ -86,7 +86,7 @@ export default function Header({
             onClick={() => {
               logFirebaseEvent(Events.HEADER_LINK_CLICKED, { name: "github" });
             }}
-            className="text-white"
+            className="text-white mt-2"
           >
             <GitHub />
           </a>
