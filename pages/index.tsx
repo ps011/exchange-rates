@@ -241,12 +241,6 @@ export default function Home({ exchangeRates, lastUpdated }: GetStaticProps) {
 
   return (
     <div className="flex items-center justify-center w-screen text-center h-[calc(100vh-252px)] overflow-scroll md:h-[calc(100vh-220px)]">
-      {destinationValue && (
-        <title>
-          {sourceCurrency.code} {sourceValue} → {destinationCurrency.code}{" "}
-          {destinationValue}
-        </title>
-      )}
       <div className="w-full md:w-4/6 xl:w-3/6 2xl:w-2/6 mt-24">
         <CurrencyInputGroup
           select={sourceCurrencySelect()}
