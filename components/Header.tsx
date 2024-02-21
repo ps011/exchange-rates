@@ -1,6 +1,7 @@
 import {
   AppBar,
   Box,
+  Chip,
   IconButton,
   Modal,
   Toolbar,
@@ -10,6 +11,41 @@ import { GitHub, InfoOutlined } from "@mui/icons-material";
 import { Events } from "../pages";
 import { useState } from "react";
 
+const tags = [
+  "currency converter",
+  "currency exchange rates",
+  "live currency rates",
+  "foreign exchange app",
+  "travel app",
+  "finance app",
+  "currency alerts",
+  "watchlist",
+  "historical data",
+  "offline access",
+  "currency calculator",
+  "user-friendly",
+  "travel currency converter",
+  "investment currency converter",
+  "multilingual currency converter",
+  "offline currency information",
+  "global economic trends",
+  "currency app",
+  "mobile app",
+  "financial planning",
+  "conversion app",
+  "accurate conversions",
+  "Currency Exchange Rates app",
+  "https://play.google.com/store/apps/details?id=app.prasheel.currency_exchange_rates",
+  "currency alerts, Currency Exchange Rates",
+  "historical data analysis, Currency Exchange Rates",
+  "travel essentials, Currency Exchange Rates",
+  "smart financial decisions, Currency Exchange Rates",
+  "best currency converter app for travellers",
+  "most accurate live currency exchange rates",
+  "offline currency converter with watchlist",
+  "get personalized currency alerts on your phone",
+  "track historical currency trends for investment decisions",
+];
 export default function Header({
   logFirebaseEvent,
 }: {
@@ -21,9 +57,13 @@ export default function Header({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "80vw",
+    height: "80vh",
     border: "2px solid #000",
     boxShadow: 24,
     p: 4,
+    backgroundColor: "background.paper",
+    borderRadius: "8px",
+    overflow: "scroll",
   };
 
   const [open, setOpen] = useState(false);
@@ -64,8 +104,10 @@ export default function Header({
       <Modal
         open={open}
         onClose={handleClose}
+        className="overflow-scroll"
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        disablePortal
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
@@ -77,7 +119,7 @@ export default function Header({
             personalized alerts, and seamless copy functionality, making foreign
             exchange a breeze.
             <ul>
-              <b> Effortless Conversions at Your Fingertips:</b>
+              <b>Effortless Conversions at Your Fingertips:</b>
               <li>
                 Instant: Convert between over 150 currencies with a single tap.
                 Forget complex calculators, get accurate rates instantly.
@@ -93,7 +135,7 @@ export default function Header({
               </li>
             </ul>
             <ul>
-              Stay Ahead of the Exchange Game:
+              <b>Stay Ahead of the Exchange Game:</b>
               <li>
                 Never Miss a Deal: Set personalized alerts for your desired
                 currencies and receive daily updates directly to your device.
@@ -108,7 +150,7 @@ export default function Header({
               </li>
             </ul>
             <ul>
-              Convenience Built-in:
+              <b>Convenience Built-in:</b>
               <li>
                 Copy with a Tap: Quickly copy current conversion rates to your
                 clipboard for sharing or reference in other apps.
@@ -123,7 +165,7 @@ export default function Header({
               </li>
             </ul>
             <ul>
-              More than Just Rates:
+              <b>More than Just Rates:</b>
               <li>
                 Travel Ready: Access offline conversions, language translations,
                 and local currency information for worry-free international
@@ -139,9 +181,12 @@ export default function Header({
               </li>
             </ul>
             Download &quot;Currency Exchange Rates&quot; today and experience
-            the power of effortless currency conversion! Duis mollis, est non
-            commodo luctus, nisi erat porttitor ligula.
+            the power of effortless currency conversion!
           </Typography>
+
+          {tags.map((tag, index) => (
+            <Chip key={index} label={tag} sx={{ mt: 2 }} />
+          ))}
         </Box>
       </Modal>
     </>
