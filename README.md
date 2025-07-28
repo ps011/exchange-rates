@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/github/ps011/exchange-rates.svg)](https://wakatime.com/badge/github/ps011/exchange-rates)
+
 ## Currency Exchange Rates
 
 This is a Next.JS based application to convert one currency into another using the `currencyapi`. I created this application to convert currencies when I'm traveling abroad and need something handy, fast, and easy to convert currencies.
